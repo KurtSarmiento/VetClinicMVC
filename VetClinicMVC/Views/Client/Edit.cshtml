@@ -1,0 +1,47 @@
+﻿@model VetClinicMVC.Models.Client
+@{
+    ViewData["Title"] = "Edit Client";
+}
+
+<h2>Edit Client</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ClientId" />
+
+    <!-- Same fields as Create.cshtml above -->
+    <div class="row">
+        <div class="col-md-6">
+            <label class="form-label">First Name</label>
+            <input asp-for="FirstName" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Last Name</label>
+            <input asp-for="LastName" class="form-control" required />
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" type="email" />
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Phone</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Address</label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">City</label>
+        <input asp-for="City" class="form-control" />
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Update Client</button>
+        <a href="/Client" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

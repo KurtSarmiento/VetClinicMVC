@@ -1,0 +1,38 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Appointment>
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<h2 class="mb-4">📅 All Appointments</h2>
+
+<a href="/Appointment/Create" class="btn btn-success mb-3">+ New Appointment</a>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Date & Time</th>
+            <th>Pet</th>
+            <th>Owner</th>
+            <th>Veterinarian</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appt in Model)
+        {
+            <tr>
+                <td>@appt.AppointmentDate.ToString("MMM dd, yyyy hh:mm tt")</td>
+                <td>@appt.Pet?.Name</td>
+                <td>@appt.Client?.FirstName @appt.Client?.LastName</td>
+                <td>@appt.Staff?.FirstName @appt.Staff?.LastName</td>
+                <td>@appt.Reason</td>
+                <td><span class="badge bg-@(appt.Status == "Confirmed" ? "success" : "info")">@appt.Status</span></td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-primary">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

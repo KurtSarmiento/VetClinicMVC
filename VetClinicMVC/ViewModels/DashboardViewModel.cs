@@ -10,5 +10,7 @@ namespace VetClinicMVC.ViewModels
         public int TotalAppointmentsToday { get; set; }
         public IEnumerable<Visit> RecentVisits { get; set; } = new List<Visit>();
         public decimal TodayRevenue { get; set; }
+        public int PendingAppointments { get; set; }
+        public int ActivePets { get; set; }
     }
 }

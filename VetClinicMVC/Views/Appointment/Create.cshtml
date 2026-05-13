@@ -1,0 +1,51 @@
+﻿@model VetClinicMVC.Models.Appointment
+@{
+    ViewData["Title"] = "New Appointment";
+}
+
+<h2>Schedule New Appointment</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Pet</label>
+        <select asp-for="PetId" class="form-select" required>
+            <option value="">-- Select Pet --</option>
+            @foreach (var pet in ViewBag.Pets)
+            {
+                <option value="@pet.PetId">@pet.Name (@pet.Client.FirstName @pet.Client.LastName)</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Veterinarian</label>
+        <select asp-for="StaffId" class="form-select" required>
+            <option value="">-- Select Veterinarian --</option>
+            @foreach (var vet in ViewBag.Staff)
+            {
+                <option value="@vet.StaffId">@vet.FirstName @vet.LastName</option>
+            }
+        </select>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label class="form-label">Appointment Date & Time</label>
+            <input asp-for="AppointmentDate" class="form-control" type="datetime-local" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Duration (minutes)</label>
+            <input asp-for="DurationMinutes" class="form-control" value="30" />
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Reason / Chief Complaint</label>
+        <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+        <a href="/Appointment" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

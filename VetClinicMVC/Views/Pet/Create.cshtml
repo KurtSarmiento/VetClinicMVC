@@ -1,0 +1,53 @@
+﻿@model VetClinicMVC.Models.Pet
+@{
+    ViewData["Title"] = "Add New Pet";
+}
+
+<h2>Add New Pet</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Client (Owner)</label>
+        <select asp-for="ClientId" class="form-select" asp-items="ViewBag.Clients as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>" required>
+            <option value="">-- Select Owner --</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label class="form-label">Pet Name</label>
+            <input asp-for="Name" class="form-control" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Species</label>
+            <select asp-for="SpeciesId" class="form-select" required>
+                <!-- Populate dynamically later or hardcode for now -->
+            </select>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label class="form-label">Breed</label>
+            <input asp-for="BreedId" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Gender</label>
+            <select asp-for="Gender" class="form-select">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Unknown">Unknown</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <label class="form-label">Birth Date</label>
+        <input asp-for="BirthDate" class="form-control" type="date" />
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save Pet</button>
+        <a href="/Pet" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

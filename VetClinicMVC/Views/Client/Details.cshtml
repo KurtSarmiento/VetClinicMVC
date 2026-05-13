@@ -1,0 +1,22 @@
+﻿@model VetClinicMVC.Models.Client
+@{
+    ViewData["Title"] = "Client Details";
+}
+
+<h2>Client Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4>@Model.FirstName @Model.LastName</h4>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Phone:</strong> @Model.Phone</p>
+        <p><strong>Address:</strong> @Model.Address, @Model.City</p>
+    </div>
+</div>
+
+<h4 class="mt-4">Pets</h4>
+<a href="/Pet/Create?clientId=@Model.ClientId" class="btn btn-success mb-3">+ Add Pet</a>
+
+<!-- Pets list will be enhanced later -->
+
+<a href="/Client" class="btn btn-secondary">Back to List</a>

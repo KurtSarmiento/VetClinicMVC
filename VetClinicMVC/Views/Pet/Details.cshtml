@@ -1,0 +1,58 @@
+﻿@model VetClinicMVC.Models.Pet
+@{
+    ViewData["Title"] = "Pet Details";
+}
+
+<h2 class="mb-4">🐾 Pet Details - @Model.Name</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Owner:</strong> @Model.Client?.FirstName @Model.Client?.LastName</p>
+                        <p><strong>Species:</strong> @Model.Species?.Name</p>
+                        <p><strong>Breed:</strong> @Model.Breed?.Name</p>
+                        <p><strong>Gender:</strong> @Model.Gender</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Birth Date:</strong> @(Model.BirthDate?.ToString("MMMM dd, yyyy"))</p>
+                        <p><strong>Weight:</strong> @Model.Weight kg</p>
+                        <p><strong>Color:</strong> @Model.Color</p>
+                        <p><strong>Microchip ID:</strong> @Model.MicrochipId</p>
+                        <p><strong>Neutered:</strong> @(Model.IsNeutered ? "Yes" : "No")</p>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mt-3">
+                        <strong>Notes:</strong>
+                        <p>@Model.Notes</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+        {
+            <img src="@Model.PhotoUrl" class="img-fluid rounded" alt="@Model.Name" />
+        }
+        else
+        {
+            <div class="bg-light border rounded p-5 text-center">
+                <h1>🐾</h1>
+                <p>No photo available</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="/Pet/Edit/@Model.PetId" class="btn btn-warning">Edit Pet</a>
+    <a href="/Client/Details/@Model.ClientId" class="btn btn-info">View Owner</a>
+    <a href="/Pet" class="btn btn-secondary">Back to Pets</a>
+</div>

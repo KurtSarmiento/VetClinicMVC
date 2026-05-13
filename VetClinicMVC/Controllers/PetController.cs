@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VetClinicMVC.Models;
 using VetClinicMVC.Services.Interfaces;
 
 namespace VetClinicMVC.Controllers
 {
+    [Authorize(Roles = "Admin,Receptionist,Veterinarian")]
     public class PetController : Controller
     {
         private readonly IPetService _petService;
@@ -33,7 +35,7 @@ namespace VetClinicMVC.Controllers
         public async Task<IActionResult> Create(int? clientId = null)
         {
             ViewBag.Clients = await _clientService.GetAllActiveAsync();
-            ViewBag.ClientId = clientId; // Pre-select client if coming from client details
+            ViewBag.ClientId = clientId;
             return View();
         }
 
@@ -45,9 +47,11 @@ namespace VetClinicMVC.Controllers
             {
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _petService.AddPetAsync(pet, currentUserId);
+
                 TempData["Success"] = "Pet added successfully!";
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Clients = await _clientService.GetAllActiveAsync();
             return View(pet);
         }
@@ -76,9 +80,11 @@ namespace VetClinicMVC.Controllers
             {
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _petService.UpdatePetAsync(pet, currentUserId);
+
                 TempData["Success"] = "Pet updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Clients = await _clientService.GetAllActiveAsync();
             return View(pet);
         }

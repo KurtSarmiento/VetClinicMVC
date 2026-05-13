@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VetClinicMVC.Models;
 using VetClinicMVC.Services.Interfaces;
 
 namespace VetClinicMVC.Controllers
 {
+    [Authorize(Roles = "Admin,Receptionist,Veterinarian")]
     public class ClientController : Controller
     {
         private readonly IClientService _clientService;
@@ -17,16 +19,17 @@ namespace VetClinicMVC.Controllers
 
         public async Task<IActionResult> Index(string search = "")
         {
-            IEnumerable<Client> clients;
+            var clients = await _clientService.GetAllActiveAsync();
 
-            if (string.IsNullOrEmpty(search))
-                clients = await _clientService.GetAllActiveAsync();
-            else
-                clients = (await _clientService.GetAllActiveAsync())
-                    .Where(c => c.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                c.LastName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                c.Email.Contains(search));
+            if (!string.IsNullOrEmpty(search))
+            {
+                clients = clients.Where(c =>
+                    c.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    c.LastName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    (c.Email?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
 
+            ViewBag.Search = search;
             return View(clients);
         }
 
@@ -41,8 +44,9 @@ namespace VetClinicMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUserId = User.Identity?.Name ?? "System"; // Improve this later with UserId
+                var currentUserId = User.Identity?.Name ?? "System";
                 await _clientService.AddClientAsync(client, currentUserId);
+
                 TempData["Success"] = "Client added successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -72,10 +76,21 @@ namespace VetClinicMVC.Controllers
             {
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _clientService.UpdateClientAsync(client, currentUserId);
+
                 TempData["Success"] = "Client updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(client);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var currentUserId = User.Identity?.Name ?? "System";
+            await _clientService.DeleteClientAsync(id, currentUserId);
+
+            TempData["Success"] = "Client deleted successfully!";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

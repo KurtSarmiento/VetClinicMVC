@@ -17,10 +17,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Client">Clients</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Pet">Pets</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Appointment">Appointments</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Visit">Visits</a></li>
+
+                    @if (User.IsInRole("Client"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/ClientPortal">My Portal</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Client">Clients</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Pet">Pets</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Appointment">Appointments</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Visit">Visits</a></li>
+                    }
                 </ul>
 
                 <ul class="navbar-nav">

@@ -1,0 +1,31 @@
+﻿@model VetClinicMVC.Models.Appointment
+@{
+    ViewData["Title"] = "Book Appointment";
+}
+
+<h2>Book an Appointment</h2>
+
+<form asp-action="Create" asp-controller="Appointment" method="post">
+    <div class="mb-3">
+        <label class="form-label">Select Your Pet</label>
+        <select asp-for="PetId" class="form-select" required>
+            <option value="">-- Choose Pet --</option>
+            @foreach (var pet in ViewBag.Pets)
+            {
+                <option value="@pet.PetId">@pet.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Preferred Date & Time</label>
+        <input asp-for="AppointmentDate" class="form-control" type="datetime-local" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Reason for Visit</label>
+        <textarea asp-for="Reason" class="form-control" rows="3" placeholder="Vaccination, Check-up, etc." required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-lg">Request Appointment</button>
+</form>

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VetClinicMVC.Models;
 using VetClinicMVC.Services.Interfaces;
 
 namespace VetClinicMVC.Controllers
 {
+    [Authorize(Roles = "Admin,Veterinarian,Receptionist")]
     public class VisitController : Controller
     {
         private readonly IVisitService _visitService;
@@ -17,7 +19,7 @@ namespace VetClinicMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var visits = await _visitService.GetRecentVisitsAsync(30);
+            var visits = await _visitService.GetRecentVisitsAsync(20);
             return View(visits);
         }
 
@@ -36,9 +38,11 @@ namespace VetClinicMVC.Controllers
             {
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _visitService.CreateVisitAsync(visit, currentUserId);
+
                 TempData["Success"] = "Visit recorded successfully!";
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Pets = await _petService.GetAllAsync();
             return View(visit);
         }

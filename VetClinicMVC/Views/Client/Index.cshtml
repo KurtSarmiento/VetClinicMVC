@@ -1,0 +1,60 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Client>
+
+@{
+    ViewData["Title"] = "Clients";
+}
+
+<h2 class="mb-4">🐾 Clients Management</h2>
+
+<div class="mb-3">
+    <a href="/Client/Create" class="btn btn-success">+ Add New Client</a>
+
+    <form asp-action="Index" method="get" class="d-inline">
+        <div class="input-group w-50 d-inline-flex">
+            <input type="text" name="search" class="form-control" placeholder="Search by name or email..."
+                   value="@ViewBag.Search" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Pets</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var client in Model)
+        {
+            <tr>
+                <td>@client.FirstName @client.LastName</td>
+                <td>@client.Email</td>
+                <td>@client.Phone</td>
+                <td>@client.City</td>
+                <td><span class="badge bg-info">@client.Pets?.Count() ?? 0</span></td>
+                <td>
+                    <a href="/Client/Details/@client.ClientId" class="btn btn-info btn-sm">View</a>
+                    <a href="/Client/Edit/@client.ClientId" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="#" onclick="deleteClient(@client.ClientId)" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function deleteClient(id) {
+            if (confirm('Are you sure you want to delete this client?')) {
+                fetch(`/Client/Delete/${id}`, { method: 'POST' })
+                    .then(() => window.location.reload());
+            }
+        }
+    </script>
+}

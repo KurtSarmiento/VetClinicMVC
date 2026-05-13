@@ -48,7 +48,9 @@ builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserLinkService, UserLinkService>();
 
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -91,6 +93,27 @@ using (var scope = app.Services.CreateScope())
         };
         await userManager.CreateAsync(clientUser, "Client123!");
         await userManager.AddToRoleAsync(clientUser, "Client");
+    }
+
+    // Link Admin to Staff
+    var adminUser = await userManager.FindByEmailAsync("admin@vetcare.com");
+    if (adminUser != null)
+    {
+        var staffRepo = scope.ServiceProvider.GetRequiredService<IStaffRepository>();
+        if (!await staffRepo.ExistsAsync(s => s.UserId == adminUser.Id))
+        {
+            var adminStaff = new Staff
+            {
+                UserId = adminUser.Id,
+                FirstName = "Admin",
+                LastName = "User",
+                Role = "Admin",
+                IsActive = true,
+                HireDate = DateOnly.FromDateTime(DateTime.UtcNow)
+            };
+            await staffRepo.AddAsync(adminStaff);
+            await staffRepo.SaveChangesAsync();
+        }
     }
 }
 

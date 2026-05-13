@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VetClinicMVC.Services.Interfaces;
 using VetClinicMVC.ViewModels;
 
 namespace VetClinicMVC.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IAppointmentService _appointmentService;
@@ -21,19 +23,20 @@ namespace VetClinicMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (User.Identity?.IsAuthenticated == true)
+            var model = new DashboardViewModel
             {
-                var model = new DashboardViewModel
-                {
-                    UpcomingAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(10),
-                    TotalClients = (await _clientService.GetAllActiveAsync()).Count(),
-                    TotalPets = (await _petService.GetAllAsync()).Count()
-                };
+                UpcomingAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(10),
+                TotalClients = (await _clientService.GetAllActiveAsync()).Count(),
+                TotalPets = (await _petService.GetAllAsync()).Count()
+            };
 
-                return View("Dashboard", model);   // Staff Dashboard
+            // Role-based View
+            if (User.IsInRole("Client"))
+            {
+                return View("ClientDashboard", model);   // For pet owners
             }
 
-            return View(); // Public landing page
+            return View("Dashboard", model); // Staff / Admin dashboard
         }
     }
 }

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Visit>
+@{
+    ViewData["Title"] = "Visits / Medical Records";
+}
+
+<h2 class="mb-4">📋 Recent Visits & Medical Records</h2>
+
+<a href="/Visit/Create" class="btn btn-success mb-3">+ Record New Visit</a>
+
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Pet</th>
+            <th>Veterinarian</th>
+            <th>Chief Complaint</th>
+            <th>Diagnosis</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visit in Model)
+        {
+            <tr>
+                <td>@visit.VisitDate.ToString()</td>
+                <td>@visit.Pet?.Name</td>
+                <td>@visit.Staff?.FirstName @visit.Staff?.LastName</td>
+                <td>@visit.ChiefComplaint</td>
+                <td>@visit.Diagnosis?.Substring(0, Math.Min(50, visit.Diagnosis?.Length ?? 0))...</td>
+                <td>
+                    <a href="/Visit/Details/@visit.VisitId" class="btn btn-info btn-sm">View Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
