@@ -1,0 +1,56 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Medication>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>💊 Pharmacy Inventory</h2>
+        <a asp-action="Create" class="btn btn-primary">Add New Medication</a>
+    </div>
+
+    <div class="table-responsive shadow-sm card">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name / Generic</th>
+                    <th>Manufacturer</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Unit</th>
+                    <th>Expiry</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    // Logic: Highlight row if stock is below ReorderLevel
+                    bool isLowStock = item.StockQuantity <= (item.ReorderLevel ?? 0);
+
+                    <tr class="@(isLowStock ? "table-warning" : "")">
+                        <td>
+                            <strong>@item.Name</strong><br />
+                            <small class="text-muted">@item.GenericName</small>
+                        </td>
+                        <td>@item.Manufacturer</td>
+                        <td>₱@item.UnitPrice?.ToString("F2")</td>
+                        <td>
+                            <span class="badge @(isLowStock ? "bg-danger" : "bg-success")">
+                                @item.StockQuantity
+                            </span>
+                        </td>
+                        <td>@item.Unit</td>
+                        <td>@item.ExpiryDate?.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <form asp-action="QuickAdjust" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.MedicationId" />
+                                <div class="btn-group btn-group-sm">
+                                    <button type="submit" name="amount" value="1" class="btn btn-outline-success">+</button>
+                                    <button type="submit" name="amount" value="-1" class="btn btn-outline-danger">-</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
