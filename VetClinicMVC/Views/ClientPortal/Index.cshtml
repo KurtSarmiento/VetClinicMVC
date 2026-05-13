@@ -1,36 +1,35 @@
-﻿@{
-    ViewData["Title"] = "My Pet Portal";
+﻿@model VetClinicMVC.Models.Client
+@{
+    ViewData["Title"] = "My Portal";
 }
 
-<h2 class="mb-4">🐾 Welcome to Your Pet Portal</h2>
+<h2 class="mb-4">🐾 Welcome, @Model.FirstName!</h2>
 
-<div class="row mb-4">
+<div class="row">
     <div class="col-md-4">
-        <div class="card text-center border-primary">
-            <div class="card-body">
+        <div class="card h-100">
+            <div class="card-body text-center">
                 <h5>My Pets</h5>
-                <h3>3</h3>
+                <h3>@ViewBag.MyPets?.Count() ?? 0</h3>
                 <a href="/ClientPortal/MyPets" class="btn btn-primary">Manage Pets</a>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-center border-success">
-            <div class="card-body">
+        <div class="card h-100">
+            <div class="card-body text-center">
                 <h5>Book Appointment</h5>
                 <a href="/ClientPortal/BookAppointment" class="btn btn-success mt-3">Book Now</a>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-center border-info">
-            <div class="card-body">
+        <div class="card h-100">
+            <div class="card-body text-center">
                 <h5>My Appointments</h5>
-                <a href="/Appointment/MyAppointments" class="btn btn-info mt-3">View Schedule</a>
+                <h3>@ViewBag.MyAppointments?.Count() ?? 0</h3>
+                <a href="/Appointment/MyAppointments" class="btn btn-info mt-3">View All</a>
             </div>
         </div>
     </div>
 </div>
-
-<h4>Upcoming Appointments</h4>
-<!-- Table will be added later -->

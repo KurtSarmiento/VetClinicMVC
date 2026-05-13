@@ -71,5 +71,10 @@ namespace VetClinicMVC.Services.Implementations
                     appointmentId, $"Appointment cancelled. Reason: {reason}");
             }
         }
+
+        public async Task<IEnumerable<Appointment>> GetAppointmentsByClientIdAsync(int clientId)
+        {
+            return await _appointmentRepository.GetAppointmentsByClientIdAsync(clientId);
+        }
     }
 }

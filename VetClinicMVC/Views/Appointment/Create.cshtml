@@ -10,9 +10,11 @@
         <label class="form-label">Pet</label>
         <select asp-for="PetId" class="form-select" required>
             <option value="">-- Select Pet --</option>
-            @foreach (var pet in ViewBag.Pets)
+            @foreach (var pet in (IEnumerable<VetClinicMVC.Models.Pet>)ViewBag.Pets ?? Enumerable.Empty<VetClinicMVC.Models.Pet>())
             {
-                <option value="@pet.PetId">@pet.Name (@pet.Client.FirstName @pet.Client.LastName)</option>
+                <option value="@pet.PetId">
+                    @pet.Name (@(pet.Client?.FirstName) @(pet.Client?.LastName))
+                </option>
             }
         </select>
     </div>

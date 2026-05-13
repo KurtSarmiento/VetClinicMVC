@@ -1,92 +1,95 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// Controllers/PetController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using VetClinicMVC.Models;
 using VetClinicMVC.Services.Interfaces;
+using VetClinicMVC.ViewModels;
 
 namespace VetClinicMVC.Controllers
 {
-    [Authorize(Roles = "Admin,Receptionist,Veterinarian")]
+    [Authorize]
     public class PetController : Controller
     {
         private readonly IPetService _petService;
         private readonly IClientService _clientService;
+        private readonly IUserLinkService _userLinkService;
 
-        public PetController(IPetService petService, IClientService clientService)
+        public PetController(IPetService petService,
+                           IClientService clientService,
+                           IUserLinkService userLinkService)
         {
             _petService = petService;
             _clientService = clientService;
+            _userLinkService = userLinkService;
         }
 
-        public async Task<IActionResult> Index(string search = "")
+        public async Task<IActionResult> Create()
         {
-            var pets = await _petService.GetAllAsync();
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
 
-            if (!string.IsNullOrEmpty(search))
+            if (User.IsInRole("Client") && currentClient != null)
             {
-                pets = pets.Where(p =>
-                    p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    p.Client.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    p.Client.LastName.Contains(search, StringComparison.OrdinalIgnoreCase));
+                ViewBag.ClientId = currentClient.ClientId;
+                ViewBag.ClientName = $"{currentClient.FirstName} {currentClient.LastName}";
+            }
+            else
+            {
+                ViewBag.Clients = await _clientService.GetAllActiveAsync();
             }
 
-            return View(pets);
+            ViewBag.Species = await _petService.GetAllSpeciesAsync();
+            return View(new PetCreateViewModel());
         }
 
-        public async Task<IActionResult> Create(int? clientId = null)
+        [HttpGet]
+        public async Task<JsonResult> GetBreedsBySpecies(int speciesId)
         {
-            ViewBag.Clients = await _clientService.GetAllActiveAsync();
-            ViewBag.ClientId = clientId;
-            return View();
+            var breeds = await _petService.GetBreedsBySpeciesAsync(speciesId);
+            return Json(breeds.Select(b => new {
+                breedId = b.BreedId,
+                name = b.Name
+            }));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Pet pet)
+        public async Task<IActionResult> Create(PetCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var pet = new Pet
+                {
+                    ClientId = model.ClientId,
+                    Name = model.Name,
+                    SpeciesId = model.SpeciesId,
+                    BreedId = model.BreedId,
+                    Gender = model.Gender,
+                    BirthDate = model.BirthDate,
+                    Weight = model.Weight,
+                    Color = model.Color,
+                    MicrochipId = model.MicrochipId ?? $"AUTO-{DateTime.UtcNow.Ticks}", // ← Fix here
+                    IsNeutered = model.IsNeutered,
+                    Notes = model.Notes,
+                    CreatedAt = DateTime.UtcNow
+                };
+
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _petService.AddPetAsync(pet, currentUserId);
 
                 TempData["Success"] = "Pet added successfully!";
-                return RedirectToAction(nameof(Index));
+
+                return User.IsInRole("Client")
+                    ? RedirectToAction("MyPets", "ClientPortal")
+                    : RedirectToAction("Index");
             }
 
-            ViewBag.Clients = await _clientService.GetAllActiveAsync();
-            return View(pet);
-        }
+            // Repopulate on error
+            ViewBag.Species = await _petService.GetAllSpeciesAsync();
+            if (!User.IsInRole("Client"))
+                ViewBag.Clients = await _clientService.GetAllActiveAsync();
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var pet = await _petService.GetByIdAsync(id);
-            if (pet == null) return NotFound();
-            return View(pet);
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            var pet = await _petService.GetByIdAsync(id);
-            if (pet == null) return NotFound();
-
-            ViewBag.Clients = await _clientService.GetAllActiveAsync();
-            return View(pet);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Pet pet)
-        {
-            if (ModelState.IsValid)
-            {
-                var currentUserId = User.Identity?.Name ?? "System";
-                await _petService.UpdatePetAsync(pet, currentUserId);
-
-                TempData["Success"] = "Pet updated successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.Clients = await _clientService.GetAllActiveAsync();
-            return View(pet);
+            return View(model);
         }
     }
 }

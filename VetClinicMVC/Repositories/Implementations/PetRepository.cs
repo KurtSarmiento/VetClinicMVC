@@ -33,5 +33,19 @@ namespace VetClinicMVC.Repositories.Implementations
                 .Include(p => p.Species)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Species>> GetAllSpeciesAsync()
+        {
+            return await _context.Species
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Breed>> GetBreedsBySpeciesAsync(int speciesId)
+        {
+            return await _context.Breeds
+                .Where(b => b.SpeciesId == speciesId)
+                .OrderBy(b => b.Name)
+                .ToListAsync();
+        }
     }
 }

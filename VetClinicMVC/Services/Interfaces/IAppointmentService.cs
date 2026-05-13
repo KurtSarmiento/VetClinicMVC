@@ -10,5 +10,6 @@ namespace VetClinicMVC.Services.Interfaces
         Task CreateAppointmentAsync(Appointment appointment, string currentUserId);
         Task UpdateAppointmentStatusAsync(int appointmentId, string status, string currentUserId);
         Task CancelAppointmentAsync(int appointmentId, string currentUserId, string? reason = null);
+        Task<IEnumerable<Appointment>> GetAppointmentsByClientIdAsync(int clientId);
     }
 }

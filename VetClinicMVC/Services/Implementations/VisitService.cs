@@ -52,5 +52,11 @@ namespace VetClinicMVC.Services.Implementations
             await _auditLogService.LogActionAsync(currentUserId, "System", "Update", "Visit",
                 visit.VisitId, $"Visit updated for pet {visit.PetId}");
         }
+
+        public async Task<IEnumerable<Visit>> GetVisitsByClientIdAsync(int clientId)
+        {
+            return await _visitRepository.GetVisitsByClientIdAsync(clientId);
+
+        }
     }
 }

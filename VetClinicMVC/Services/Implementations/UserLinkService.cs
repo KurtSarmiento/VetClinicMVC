@@ -30,21 +30,19 @@ namespace VetClinicMVC.Services.Implementations
 
             var userId = user.Id;
 
-            // Link as Client if they have Client role
-            var isClient = _httpContextAccessor.HttpContext.User.IsInRole("Client");
-
-            if (isClient)
+            // Auto-link as Client
+            if (_httpContextAccessor.HttpContext.User.IsInRole("Client"))
             {
-                var existingClient = (await _clientService.GetAllActiveAsync())
+                var existing = (await _clientService.GetAllActiveAsync())
                     .FirstOrDefault(c => c.UserId == userId);
 
-                if (existingClient == null)
+                if (existing == null)
                 {
                     var client = new Client
                     {
                         UserId = userId,
                         FirstName = user.Email?.Split('@')[0] ?? "Client",
-                        LastName = "User",
+                        LastName = "",
                         Email = user.Email,
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow
@@ -53,6 +51,8 @@ namespace VetClinicMVC.Services.Implementations
                     await _clientService.AddClientAsync(client, userId);
                 }
             }
+
+            // You can add similar logic for Staff later
         }
 
         public async Task<Client?> GetCurrentClientAsync()

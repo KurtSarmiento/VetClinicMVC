@@ -1,0 +1,34 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Pet>
+@{
+    ViewData["Title"] = "My Pets";
+}
+
+<h2 class="mb-4">🐾 My Pets</h2>
+
+<a href="/Pet/Create" class="btn btn-success mb-3">+ Add New Pet</a>
+
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Species</th>
+            <th>Breed</th>
+            <th>Gender</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pet in Model)
+        {
+            <tr>
+                <td>@pet.Name</td>
+                <td>@pet.Species?.Name</td>
+                <td>@pet.Breed?.Name</td>
+                <td>@pet.Gender</td>
+                <td>
+                    <a href="/Pet/Details/@pet.PetId" class="btn btn-info btn-sm">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

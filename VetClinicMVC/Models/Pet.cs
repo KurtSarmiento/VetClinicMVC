@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VetClinicMVC.Models;
 
@@ -17,6 +18,8 @@ public partial class Pet
 
     public string? Gender { get; set; }
 
+    [DataType(DataType.Date)]
+    [Display(Name = "Birth Date")]
     public DateOnly? BirthDate { get; set; }
 
     public decimal? Weight { get; set; }

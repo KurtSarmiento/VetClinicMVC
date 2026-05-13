@@ -44,5 +44,15 @@ namespace VetClinicMVC.Repositories.Implementations
                 .Take(count)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Visit>> GetVisitsByClientIdAsync(int clientId)
+        {
+            return await _context.Visits
+                .Include(v => v.Pet)
+                .Include(v => v.Staff)
+                .Where(v => v.Pet.ClientId == clientId)
+                .OrderByDescending(v => v.VisitDate)
+                .ToListAsync();
+        }
     }
 }

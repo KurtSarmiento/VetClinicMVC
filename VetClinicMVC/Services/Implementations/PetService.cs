@@ -60,5 +60,13 @@ namespace VetClinicMVC.Services.Implementations
                     id, $"Pet deleted: {pet.Name}");
             }
         }
+        public async Task<IEnumerable<Species>> GetAllSpeciesAsync()
+        {
+            return await _petRepository.GetAllSpeciesAsync();
+        }
+        public async Task<IEnumerable<Breed>> GetBreedsBySpeciesAsync(int speciesId)
+        {
+            return await _petRepository.GetBreedsBySpeciesAsync(speciesId);
+        }
     }
 }

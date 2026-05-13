@@ -1,46 +1,73 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿// Controllers/ClientPortalController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VetClinicMVC.Services.Interfaces;
 
 namespace VetClinicMVC.Controllers
 {
-    [Authorize(Roles = "Client")]   // Only logged-in Clients
+    [Authorize(Roles = "Client")]
     public class ClientPortalController : Controller
     {
-        private readonly IClientService _clientService;
+        private readonly IUserLinkService _userLinkService;
         private readonly IPetService _petService;
         private readonly IAppointmentService _appointmentService;
+        private readonly IVisitService _visitService;
 
-        public ClientPortalController(IClientService clientService,
-                                    IPetService petService,
-                                    IAppointmentService appointmentService)
+        public ClientPortalController(IUserLinkService userLinkService,
+            IPetService petService,
+            IAppointmentService appointmentService,
+            IVisitService visitService)
         {
-            _clientService = clientService;
+            _userLinkService = userLinkService;
             _petService = petService;
             _appointmentService = appointmentService;
+            _visitService = visitService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var userId = User.Identity?.Name; // or better: UserManager.GetUserId(User)
+            await _userLinkService.LinkCurrentUserToProfileAsync();
 
-            // TODO: Later link UserId to Client record
-            var pets = await _petService.GetAllAsync(); // Temporary - will filter by owner later
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            if (currentClient == null)
+            {
+                TempData["Error"] = "Your account is not linked yet. Please contact admin.";
+                return RedirectToAction("Index", "Home");
+            }
 
-            ViewBag.MyAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(5);
+            var myPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
+            var myAppointments = await _appointmentService.GetAppointmentsByClientIdAsync(currentClient.ClientId);
 
-            return View(pets);
+            ViewBag.MyPets = myPets;
+            ViewBag.MyAppointments = myAppointments;
+
+            return View(currentClient);
         }
 
         public async Task<IActionResult> MyPets()
         {
-            var pets = await _petService.GetAllAsync(); // Improve later with proper filtering
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            if (currentClient == null) return RedirectToAction("Index", "Home");
+
+            var pets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
             return View(pets);
+        }
+
+        public async Task<IActionResult> MyVisits()
+        {
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            if (currentClient == null) return RedirectToAction("Index", "Home");
+
+            var visits = await _visitService.GetVisitsByClientIdAsync(currentClient.ClientId);
+            return View(visits);
         }
 
         public async Task<IActionResult> BookAppointment()
         {
-            ViewBag.Pets = await _petService.GetAllAsync();
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            if (currentClient == null) return RedirectToAction("Index", "Home");
+
+            ViewBag.MyPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
             return View();
         }
     }

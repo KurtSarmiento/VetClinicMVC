@@ -31,8 +31,8 @@ namespace VetClinicMVC.Controllers
         // Staff - Create Appointment
         public async Task<IActionResult> Create()
         {
-            ViewBag.Pets = await _petService.GetAllAsync();
-            ViewBag.Staff = await _staffService.GetVeterinariansAsync(); // Only vets
+            ViewBag.Pets = await _petService.GetAllAsync();           // ← Must be here
+            ViewBag.Staff = await _staffService.GetVeterinariansAsync();
             return View();
         }
 

@@ -8,5 +8,7 @@ namespace VetClinicMVC.Repositories.Interfaces
         Task<IEnumerable<Visit>> GetVisitsByPetIdAsync(int petId);
         Task<IEnumerable<Visit>> GetVisitsByStaffIdAsync(int staffId);
         Task<IEnumerable<Visit>> GetRecentVisitsAsync(int count = 10);
+
+        Task<IEnumerable<Visit>> GetVisitsByClientIdAsync(int clientId);
     }
 }

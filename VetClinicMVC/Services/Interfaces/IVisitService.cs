@@ -8,8 +8,8 @@ namespace VetClinicMVC.Services.Interfaces
         Task<IEnumerable<Visit>> GetVisitsByPetIdAsync(int petId);
         Task<IEnumerable<Visit>> GetVisitsByStaffIdAsync(int staffId);
         Task<IEnumerable<Visit>> GetRecentVisitsAsync(int count = 10);
-
         Task CreateVisitAsync(Visit visit, string currentUserId);
         Task UpdateVisitAsync(Visit visit, string currentUserId);
+        Task<IEnumerable<Visit>> GetVisitsByClientIdAsync(int clientId);
     }
 }

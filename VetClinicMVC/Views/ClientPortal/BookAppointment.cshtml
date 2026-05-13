@@ -3,14 +3,14 @@
     ViewData["Title"] = "Book Appointment";
 }
 
-<h2>Book an Appointment</h2>
+<h2>📅 Book New Appointment</h2>
 
 <form asp-action="Create" asp-controller="Appointment" method="post">
     <div class="mb-3">
-        <label class="form-label">Select Your Pet</label>
+        <label class="form-label">Select Pet</label>
         <select asp-for="PetId" class="form-select" required>
-            <option value="">-- Choose Pet --</option>
-            @foreach (var pet in ViewBag.Pets)
+            <option value="">-- Choose your pet --</option>
+            @foreach (var pet in (IEnumerable<VetClinicMVC.Models.Pet>)ViewBag.MyPets ?? Enumerable.Empty<VetClinicMVC.Models.Pet>())
             {
                 <option value="@pet.PetId">@pet.Name</option>
             }
@@ -24,8 +24,9 @@
 
     <div class="mb-3">
         <label class="form-label">Reason for Visit</label>
-        <textarea asp-for="Reason" class="form-control" rows="3" placeholder="Vaccination, Check-up, etc." required></textarea>
+        <textarea asp-for="Reason" class="form-control" rows="3" required></textarea>
     </div>
 
     <button type="submit" class="btn btn-success btn-lg">Request Appointment</button>
+    <a href="/ClientPortal" class="btn btn-secondary">Cancel</a>
 </form>

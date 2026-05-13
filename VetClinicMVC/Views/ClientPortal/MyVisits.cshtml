@@ -1,0 +1,30 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Visit>
+@{
+    ViewData["Title"] = "My Medical Records";
+}
+
+<h2 class="mb-4">📋 My Medical Records</h2>
+
+<table class="table table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Pet</th>
+            <th>Vet</th>
+            <th>Chief Complaint</th>
+            <th>Diagnosis</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var visit in Model)
+        {
+            <tr>
+                <td>@visit.VisitDate.ToString()</td>
+                <td>@visit.Pet?.Name</td>
+                <td>@visit.Staff?.FirstName</td>
+                <td>@visit.ChiefComplaint</td>
+                <td>@visit.Diagnosis?.Substring(0, Math.Min(60, visit.Diagnosis?.Length ?? 0))...</td>
+            </tr>
+        }
+    </tbody>
+</table>

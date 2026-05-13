@@ -10,5 +10,7 @@ namespace VetClinicMVC.Services.Interfaces
         Task AddPetAsync(Pet pet, string currentUserId);
         Task UpdatePetAsync(Pet pet, string currentUserId);
         Task DeletePetAsync(int id, string currentUserId);
+        Task<IEnumerable<Species>> GetAllSpeciesAsync();
+        Task<IEnumerable<Breed>> GetBreedsBySpeciesAsync(int speciesId);
     }
 }

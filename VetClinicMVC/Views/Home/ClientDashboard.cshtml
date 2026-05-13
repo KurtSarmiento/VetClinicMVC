@@ -13,8 +13,8 @@
         <div class="card border-primary">
             <div class="card-body text-center">
                 <h5>My Pets</h5>
-                <h3>3</h3> <!-- Will be dynamic later -->
-                <a href="/Pet" class="btn btn-primary mt-3">View My Pets</a>
+                <h3>@(ViewBag.MyPets?.Count() ?? 0)</h3>
+                <a href="/ClientPortal/MyPets" class="btn btn-primary mt-3">View My Pets</a>
             </div>
         </div>
     </div>
@@ -23,7 +23,7 @@
             <div class="card-body text-center">
                 <h5>Upcoming Appointments</h5>
                 <h3>@Model.UpcomingAppointments.Count()</h3>
-                <a href="/Appointment" class="btn btn-success mt-3">Book New Appointment</a>
+                <a href="/ClientPortal/BookAppointment" class="btn btn-success mt-3">Book New Appointment</a>
             </div>
         </div>
     </div>
@@ -31,12 +31,9 @@
         <div class="card border-warning">
             <div class="card-body text-center">
                 <h5>Medical Records</h5>
-                <h3>12</h3>
-                <a href="#" class="btn btn-warning mt-3">View Records</a>
+                <h3>0</h3>
+                <a href="/ClientPortal/MyVisits" class="btn btn-warning mt-3">View Records</a>
             </div>
         </div>
     </div>
 </div>
-
-<h4>Upcoming Appointments</h4>
-<!-- Same table as above but filtered for current client later -->

@@ -49,6 +49,7 @@ namespace VetClinicMVC.Repositories.Implementations
         {
             return await _context.Appointments
                 .Include(a => a.Pet)
+                .Include(a => a.Staff)
                 .Where(a => a.ClientId == clientId)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ToListAsync();
