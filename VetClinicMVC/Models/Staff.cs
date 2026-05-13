@@ -21,7 +21,7 @@ public partial class Staff
 
     public string? Phone { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public DateOnly? HireDate { get; set; }
 

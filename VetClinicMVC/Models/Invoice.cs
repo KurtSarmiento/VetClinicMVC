@@ -30,4 +30,6 @@ public partial class Invoice
     public virtual Client Client { get; set; } = null!;
 
     public virtual Visit? Visit { get; set; }
+
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

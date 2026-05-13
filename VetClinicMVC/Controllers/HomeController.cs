@@ -1,32 +1,38 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using VetClinicMVC.Models;
+using VetClinicMVC.Services.Interfaces;
+using VetClinicMVC.ViewModels;
 
 namespace VetClinicMVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IClientService _clientService;
+        private readonly IPetService _petService;
+        private readonly IVisitService _visitService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IAppointmentService appointmentService,
+                              IClientService clientService,
+                              IPetService petService,
+                              IVisitService visitService)
         {
-            _logger = logger;
+            _appointmentService = appointmentService;
+            _clientService = clientService;
+            _petService = petService;
+            _visitService = visitService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var model = new DashboardViewModel
+            {
+                UpcomingAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(8),
+                TotalClients = (await _clientService.GetAllActiveAsync()).Count(),
+                TotalPets = (await _petService.GetAllAsync()).Count(),
+                RecentVisits = await _visitService.GetRecentVisitsAsync(6),
+            };
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(model);
         }
     }
 }

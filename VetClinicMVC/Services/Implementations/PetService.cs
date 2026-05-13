@@ -20,6 +20,11 @@ namespace VetClinicMVC.Services.Implementations
             return await _petRepository.GetByIdAsync(id);
         }
 
+        public async Task<IEnumerable<Pet>> GetAllAsync()
+        {
+            return await _petRepository.GetAllAsync();
+        }
+
         public async Task<IEnumerable<Pet>> GetPetsByClientIdAsync(int clientId)
         {
             return await _petRepository.GetPetsByClientIdAsync(clientId);

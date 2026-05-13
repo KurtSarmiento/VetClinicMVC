@@ -27,6 +27,8 @@ public partial class VetClinicContext : DbContext
 
     public virtual DbSet<Medication> Medications { get; set; }
 
+    public virtual DbSet<Payment> Payments { get; set; }
+
     public virtual DbSet<Pet> Pets { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
