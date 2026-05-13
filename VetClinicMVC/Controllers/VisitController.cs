@@ -5,29 +5,34 @@ using VetClinicMVC.Services.Interfaces;
 
 namespace VetClinicMVC.Controllers
 {
-    [Authorize(Roles = "Admin,Veterinarian,Receptionist")]
+    [Authorize(Roles = "Admin,Veterinarian")]
     public class VisitController : Controller
     {
         private readonly IVisitService _visitService;
-        private readonly IPetService _petService;
+        private readonly IAppointmentService _appointmentService;
 
-        public VisitController(IVisitService visitService, IPetService petService)
+        public VisitController(IVisitService visitService, IAppointmentService appointmentService)
         {
             _visitService = visitService;
-            _petService = petService;
+            _appointmentService = appointmentService;
         }
 
-        public async Task<IActionResult> Index()
+        // Create a visit record from an appointment
+        public async Task<IActionResult> Create(int appointmentId)
         {
-            var visits = await _visitService.GetRecentVisitsAsync(20);
-            return View(visits);
-        }
+            var appointment = await _appointmentService.GetByIdAsync(appointmentId);
+            if (appointment == null) return NotFound();
 
-        public async Task<IActionResult> Create(int? petId = null)
-        {
-            ViewBag.Pets = await _petService.GetAllAsync();
-            ViewBag.PetId = petId;
-            return View();
+            var visit = new Visit
+            {
+                AppointmentId = appointmentId,
+                PetId = appointment.PetId,
+                StaffId = appointment.StaffId,
+                VisitDate = DateTime.Now,
+                Weight = appointment.Pet?.Weight ?? 0
+            };
+
+            return View(visit);
         }
 
         [HttpPost]
@@ -39,18 +44,12 @@ namespace VetClinicMVC.Controllers
                 var currentUserId = User.Identity?.Name ?? "System";
                 await _visitService.CreateVisitAsync(visit, currentUserId);
 
-                TempData["Success"] = "Visit recorded successfully!";
-                return RedirectToAction(nameof(Index));
+                // Also update appointment status to Completed
+                await _appointmentService.UpdateAppointmentStatusAsync(visit.AppointmentId.Value, "Completed", currentUserId);
+
+                TempData["Success"] = "Medical record saved successfully!";
+                return RedirectToAction("Index", "Appointment");
             }
-
-            ViewBag.Pets = await _petService.GetAllAsync();
-            return View(visit);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var visit = await _visitService.GetByIdAsync(id);
-            if (visit == null) return NotFound();
             return View(visit);
         }
     }

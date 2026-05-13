@@ -11,55 +11,89 @@ namespace VetClinicMVC.Controllers
         private readonly IAppointmentService _appointmentService;
         private readonly IPetService _petService;
         private readonly IStaffService _staffService;
+        private readonly IUserLinkService _userLinkService;
 
         public AppointmentController(IAppointmentService appointmentService,
                                    IPetService petService,
-                                   IStaffService staffService)
+                                   IStaffService staffService,
+                                   IUserLinkService userLinkService)
         {
             _appointmentService = appointmentService;
             _petService = petService;
             _staffService = staffService;
+            _userLinkService = userLinkService;
         }
 
-        // Staff View - All Appointments
+        // STAFF VIEW: List all upcoming appointments
         public async Task<IActionResult> Index()
         {
-            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(20);
+            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(50);
             return View(appointments);
         }
 
-        // Staff - Create Appointment
-        public async Task<IActionResult> Create()
+        // CLIENT VIEW: Booking Form
+        public async Task<IActionResult> Book()
         {
-            ViewBag.Pets = await _petService.GetAllAsync();           // ← Must be here
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            if (currentClient == null)
+            {
+                TempData["Error"] = "Client profile not found. Please complete your profile first.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ViewBag.MyPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
             ViewBag.Staff = await _staffService.GetVeterinariansAsync();
-            return View();
+
+            // Set a default date for the UI
+            var model = new Appointment { AppointmentDate = DateTime.Now.AddDays(1) };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Appointment appointment)
+        public async Task<IActionResult> Book(Appointment appointment)
         {
             if (ModelState.IsValid)
             {
                 var currentUserId = User.Identity?.Name ?? "System";
+                // Ensure the client ID is attached to the appointment
+                var client = await _userLinkService.GetCurrentClientAsync();
+                appointment.ClientId = client.ClientId;
+
                 await _appointmentService.CreateAppointmentAsync(appointment, currentUserId);
 
-                TempData["Success"] = "Appointment scheduled successfully!";
-                return RedirectToAction(nameof(Index));
+                TempData["Success"] = "Appointment request submitted successfully!";
+                return User.IsInRole("Client") ? RedirectToAction("Index", "ClientPortal") : RedirectToAction("Index");
             }
 
-            ViewBag.Pets = await _petService.GetAllAsync();
+            var currentClient = await _userLinkService.GetCurrentClientAsync();
+            ViewBag.MyPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
             ViewBag.Staff = await _staffService.GetVeterinariansAsync();
             return View(appointment);
         }
 
-        // Client View - My Appointments
-        public async Task<IActionResult> MyAppointments()
+        // STAFF ACTION: Confirm Appointment
+        [HttpPost]
+        public async Task<IActionResult> Confirm(int id)
         {
-            // TODO: Filter by current client later
-            var appointments = await _appointmentService.GetUpcomingAppointmentsAsync(10);
-            return View(appointments);
+            var currentUserId = User.Identity?.Name ?? "System";
+            // Match the name in your Service: UpdateAppointmentStatusAsync
+            await _appointmentService.UpdateAppointmentStatusAsync(id, "Confirmed", currentUserId);
+
+            TempData["Success"] = "Appointment Confirmed.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // STAFF ACTION: Cancel Appointment
+        [HttpPost]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var currentUserId = User.Identity?.Name ?? "System";
+            // Using your specific Cancel method
+            await _appointmentService.CancelAppointmentAsync(id, currentUserId, "Cancelled by staff");
+
+            TempData["Warning"] = "Appointment Cancelled.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

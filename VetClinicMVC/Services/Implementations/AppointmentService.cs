@@ -32,12 +32,22 @@ namespace VetClinicMVC.Services.Implementations
 
         public async Task CreateAppointmentAsync(Appointment appointment, string currentUserId)
         {
+            // Business Logic: Set initial status
+            appointment.Status = "Scheduled";
+            appointment.CreatedAt = DateTime.UtcNow;
+
             await _appointmentRepository.AddAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
 
-            await _auditLogService.LogActionAsync(currentUserId, "System", "Create", "Appointment",
+            // Maximalist Touch: Log the activity
+            await _auditLogService.LogActionAsync(
+                currentUserId,
+                "System",
+                "Create",
+                "Appointment",
                 appointment.AppointmentId,
-                $"Appointment created for pet {appointment.PetId} on {appointment.AppointmentDate}");
+                $"Appointment created for pet {appointment.PetId} on {appointment.AppointmentDate}"
+            );
         }
 
         public async Task UpdateAppointmentStatusAsync(int appointmentId, string status, string currentUserId)
