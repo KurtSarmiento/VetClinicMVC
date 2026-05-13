@@ -1,0 +1,57 @@
+﻿@model VetClinicMVC.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">🐾 Welcome back, @User.Identity?.Name!</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5>Total Clients</h5>
+                <h3>@Model.TotalClients</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5>Total Pets</h5>
+                <h3>@Model.TotalPets</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5>Upcoming Appointments</h5>
+                <h3>@Model.UpcomingAppointments.Count()</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mt-5">Upcoming Appointments</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Pet</th>
+            <th>Client</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appt in Model.UpcomingAppointments)
+        {
+            <tr>
+                <td>@appt.AppointmentDate.ToString("MMM dd, yyyy HH:mm")</td>
+                <td>@appt.Pet?.Name</td>
+                <td>@appt.Client?.FirstName @appt.Client?.LastName</td>
+                <td><span class="badge bg-info">@appt.Status</span></td>
+            </tr>
+        }
+    </tbody>
+</table>

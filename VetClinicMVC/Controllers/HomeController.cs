@@ -9,30 +9,31 @@ namespace VetClinicMVC.Controllers
         private readonly IAppointmentService _appointmentService;
         private readonly IClientService _clientService;
         private readonly IPetService _petService;
-        private readonly IVisitService _visitService;
 
         public HomeController(IAppointmentService appointmentService,
                               IClientService clientService,
-                              IPetService petService,
-                              IVisitService visitService)
+                              IPetService petService)
         {
             _appointmentService = appointmentService;
             _clientService = clientService;
             _petService = petService;
-            _visitService = visitService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var model = new DashboardViewModel
+            if (User.Identity?.IsAuthenticated == true)
             {
-                UpcomingAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(8),
-                TotalClients = (await _clientService.GetAllActiveAsync()).Count(),
-                TotalPets = (await _petService.GetAllAsync()).Count(),
-                RecentVisits = await _visitService.GetRecentVisitsAsync(6),
-            };
+                var model = new DashboardViewModel
+                {
+                    UpcomingAppointments = await _appointmentService.GetUpcomingAppointmentsAsync(10),
+                    TotalClients = (await _clientService.GetAllActiveAsync()).Count(),
+                    TotalPets = (await _petService.GetAllAsync()).Count()
+                };
 
-            return View(model);
+                return View("Dashboard", model);   // Staff Dashboard
+            }
+
+            return View(); // Public landing page
         }
     }
 }
