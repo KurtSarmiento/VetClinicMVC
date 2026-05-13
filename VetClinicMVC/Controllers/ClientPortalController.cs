@@ -1,7 +1,9 @@
-﻿// Controllers/ClientPortalController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VetClinicMVC.Models;
+using VetClinicMVC.Repositories.Interfaces;
 using VetClinicMVC.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace VetClinicMVC.Controllers
 {
@@ -12,36 +14,81 @@ namespace VetClinicMVC.Controllers
         private readonly IPetService _petService;
         private readonly IAppointmentService _appointmentService;
         private readonly IVisitService _visitService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public ClientPortalController(IUserLinkService userLinkService,
             IPetService petService,
             IAppointmentService appointmentService,
-            IVisitService visitService)
+            IVisitService visitService,
+            IUnitOfWork unitOfWork,
+            UserManager<IdentityUser> userManager)
         {
             _userLinkService = userLinkService;
             _petService = petService;
             _appointmentService = appointmentService;
             _visitService = visitService;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            await _userLinkService.LinkCurrentUserToProfileAsync();
+            var userEmail = User.Identity?.Name;
 
-            var currentClient = await _userLinkService.GetCurrentClientAsync();
-            if (currentClient == null)
+            // 1. Get the client
+            var clients = await _unitOfWork.Clients.FindAsync(c => c.Email == userEmail);
+            var client = clients.FirstOrDefault();
+
+            // 2. If no record exists, go to CompleteProfile
+            if (client == null)
             {
-                TempData["Error"] = "Your account is not linked yet. Please contact admin.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("CompleteProfile");
             }
 
-            var myPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
-            var myAppointments = await _appointmentService.GetAppointmentsByClientIdAsync(currentClient.ClientId);
+            // 3. Get the stats for the ViewBag
+            var pets = await _unitOfWork.Pets.FindAsync(p => p.ClientId == client.ClientId);
+            var appointments = await _unitOfWork.Appointments.FindAsync(a => a.Pet.ClientId == client.ClientId);
 
-            ViewBag.MyPets = myPets;
-            ViewBag.MyAppointments = myAppointments;
+            ViewBag.MyPets = pets;
+            ViewBag.MyAppointments = appointments;
 
-            return View(currentClient);
+            // 🔥 This is the fix: Sending 'client', NOT 'pets'
+            return View(client);
+        }
+
+        [HttpGet]
+        public IActionResult CompleteProfile()
+        {
+            return View(new Client());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteProfile(Client client)
+        {
+            // 1. Get the current logged-in Identity User
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user != null)
+            {
+                // 2. STICK THEM TOGETHER!
+                client.UserId = user.Id;    // This fills the NULL column
+                client.Email = user.Email;  // This ensures the emails match
+            }
+
+            ModelState.Remove("UserId"); // Remove from validation if necessary
+            ModelState.Remove("Email");
+
+            if (ModelState.IsValid)
+            {
+                await _unitOfWork.Clients.AddAsync(client);
+                await _unitOfWork.CompleteAsync();
+
+                TempData["Success"] = "Profile linked and saved!";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(client);
         }
 
         public async Task<IActionResult> MyPets()

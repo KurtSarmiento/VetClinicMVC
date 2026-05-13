@@ -1,0 +1,31 @@
+﻿@model VetClinicMVC.Models.Client
+
+<div class="container mt-5">
+    <div class="card shadow mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <h3 class="text-center mb-4">🐾 Complete Your Profile</h3>
+            <p class="text-muted text-center">Just a few more details before you can book an appointment.</p>
+
+            <form asp-action="CompleteProfile" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="John" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Doe" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input asp-for="Phone" class="form-control" placeholder="0912 345 6789" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Start Using VetCare</button>
+            </form>
+        </div>
+    </div>
+</div>

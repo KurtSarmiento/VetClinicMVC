@@ -1,0 +1,87 @@
+﻿@model VetClinicMVC.ViewModels.DashboardViewModel
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">Clinic Overview</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <h6>Total Patients</h6>
+                    <h2>@Model.TotalClients</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h6>Revenue (Paid)</h6>
+                    <h2>₱@Model.TotalRevenue.ToString("N2")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <h6>Appts Today</h6>
+                    <h2>@Model.AppointmentsToday</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    <h6>Low Stock Alerts</h6>
+                    <h2>@Model.LowStockItems</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-dark text-white">Next Appointments</div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Pet</th>
+                                <th>Time</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appt in Model.UpcomingAppointments)
+                            {
+                                <tr>
+                                    <td>@appt.Pet?.Name</td>
+                                    <td>@appt.AppointmentDate.ToString("t")</td>
+                                    <td>@appt.Reason</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow mb-4 border-danger">
+                <div class="card-header bg-danger text-white">Critical Stock Levels</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var med in Model.LowStockMedications)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @med.Name
+                                <span class="badge bg-danger rounded-pill">@med.StockQuantity @med.Unit left</span>
+                            </li>
+                        }
+                    </ul>
+                    <a asp-controller="Inventory" asp-action="Index" class="btn btn-sm btn-outline-danger mt-3 w-100">Restock Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

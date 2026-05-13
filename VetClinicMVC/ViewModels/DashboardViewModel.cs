@@ -1,16 +1,17 @@
-﻿using VetClinicMVC.Models;
-
-namespace VetClinicMVC.ViewModels
+﻿namespace VetClinicMVC.ViewModels
 {
     public class DashboardViewModel
     {
-        public IEnumerable<Appointment> UpcomingAppointments { get; set; } = new List<Appointment>();
+        // Add these two specific lines:
         public int TotalClients { get; set; }
         public int TotalPets { get; set; }
-        public int TotalAppointmentsToday { get; set; }
-        public IEnumerable<Visit> RecentVisits { get; set; } = new List<Visit>();
-        public decimal TodayRevenue { get; set; }
-        public int PendingAppointments { get; set; }
-        public int ActivePets { get; set; }
+
+        public int AppointmentsToday { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public int LowStockItems { get; set; }
+
+        public IEnumerable<VetClinicMVC.Models.Appointment> UpcomingAppointments { get; set; } = new List<VetClinicMVC.Models.Appointment>();
+        public IEnumerable<VetClinicMVC.Models.Medication> LowStockMedications { get; set; } = new List<VetClinicMVC.Models.Medication>();
+        public IEnumerable<VetClinicMVC.Models.Invoice> RecentInvoices { get; set; } = new List<VetClinicMVC.Models.Invoice>();
     }
 }

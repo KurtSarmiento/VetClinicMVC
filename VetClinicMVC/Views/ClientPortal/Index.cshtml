@@ -10,25 +10,27 @@
         <div class="card h-100">
             <div class="card-body text-center">
                 <h5>My Pets</h5>
-                <h3>@ViewBag.MyPets?.Count() ?? 0</h3>
-                <a href="/ClientPortal/MyPets" class="btn btn-primary">Manage Pets</a>
+                <h3>@(ViewBag.MyPets != null ? ((IEnumerable<VetClinicMVC.Models.Pet>)ViewBag.MyPets).Count() : 0)</h3>
+                <a asp-controller="Pet" asp-action="Index" class="btn btn-primary">Manage Pets</a>
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-body text-center">
                 <h5>Book Appointment</h5>
-                <a href="/ClientPortal/BookAppointment" class="btn btn-success mt-3">Book Now</a>
+                <a asp-controller="Appointment" asp-action="Book" class="btn btn-success mt-3">Book Now</a>
             </div>
         </div>
     </div>
+
     <div class="col-md-4">
         <div class="card h-100">
             <div class="card-body text-center">
                 <h5>My Appointments</h5>
-                <h3>@ViewBag.MyAppointments?.Count() ?? 0</h3>
-                <a href="/Appointment/MyAppointments" class="btn btn-info mt-3">View All</a>
+                <h3>@(ViewBag.MyAppointments != null ? ((IEnumerable<VetClinicMVC.Models.Appointment>)ViewBag.MyAppointments).Count() : 0)</h3>
+                <a asp-controller="Appointment" asp-action="Index" class="btn btn-info mt-3">View All</a>
             </div>
         </div>
     </div>

@@ -47,7 +47,10 @@
     <div class="row mt-3">
         <div class="col-md-6">
             <label class="form-label">Breed</label>
-            <input asp-for="BreedId" class="form-control" placeholder="Breed ID (or leave empty)" />
+            <select asp-for="BreedId" id="breedSelect" class="form-select">
+                <option value="">-- Select Species First --</option>
+            </select>
+            <span asp-validation-for="BreedId" class="text-danger"></span>
         </div>
         <div class="col-md-6">
             <label class="form-label">Gender</label>
@@ -77,11 +80,6 @@
     </div>
 
     <div class="mt-3">
-        <label class="form-label">Microchip ID (optional)</label>
-        <input asp-for="MicrochipId" class="form-control" />
-    </div>
-
-    <div class="mt-3">
         <label class="form-label">Notes</label>
         <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
     </div>
@@ -91,3 +89,38 @@
         <a href="@(User.IsInRole("Client") ? "/ClientPortal/MyPets" : "/Pet")" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // This triggers whenever the Species dropdown changes
+            $('#SpeciesId').change(function () {
+                var speciesId = $(this).val();
+                var breedSelect = $('#breedSelect');
+
+                // Clear current options
+                breedSelect.empty();
+                breedSelect.append('<option value="">-- Loading Breeds... --</option>');
+
+                if (speciesId) {
+                    $.getJSON('@Url.Action("GetBreedsBySpecies", "Pet")', { speciesId: speciesId }, function (data) {
+                        breedSelect.empty();
+                        breedSelect.append('<option value="">-- Select Breed --</option>');
+
+                        // Loop through the JSON data we got from the controller
+                        $.each(data, function (i, item) {
+                            breedSelect.append($('<option>', {
+                                value: item.breedId,
+                                text: item.name
+                            }));
+                        });
+                    });
+                } else {
+                    breedSelect.empty();
+                    breedSelect.append('<option value="">-- Select Species First --</option>');
+                }
+            });
+        });
+    </script>
+}

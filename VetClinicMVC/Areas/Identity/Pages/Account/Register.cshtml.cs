@@ -120,6 +120,7 @@ namespace VetClinicMVC.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "Client");
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -141,7 +142,7 @@ namespace VetClinicMVC.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return RedirectToAction("Index", "ClientPortal");
                     }
                 }
                 foreach (var error in result.Errors)

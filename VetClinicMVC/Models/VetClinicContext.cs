@@ -97,7 +97,6 @@ namespace VetClinicMVC.Models
             modelBuilder.Entity<Pet>(entity =>
             {
                 entity.HasKey(e => e.PetId).HasName("PK__Pets__48E53862C763279D");
-                entity.HasIndex(e => e.MicrochipId, "UQ__Pets__4637B1CC91F45455").IsUnique();
                 entity.HasOne(d => d.Client).WithMany(p => p.Pets)
                     .HasForeignKey(d => d.ClientId);
                 entity.HasOne(d => d.Species).WithMany(p => p.Pets)

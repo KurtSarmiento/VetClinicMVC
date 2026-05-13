@@ -24,8 +24,6 @@ namespace VetClinicMVC.ViewModels
 
         public string? Color { get; set; }
 
-        public string? MicrochipId { get; set; }
-
         public bool IsNeutered { get; set; } = false;
 
         public string? Notes { get; set; }
