@@ -21,7 +21,7 @@
                 <h2 class="display-4 fw-bold">@(ViewBag.MyPets != null ? ((IEnumerable<VetClinicMVC.Models.Pet>)ViewBag.MyPets).Count() : 0)</h2>
                 <p class="text-muted">Registered Pets</p>
                 <div class="d-grid mt-3">
-                    <a asp-controller="Pet" asp-action="Index" class="btn btn-primary btn-lg">Manage Pets</a>
+                    <a asp-controller="ClientPortal" asp-action="MyPets" class="btn btn-primary btn-lg">Manage Pets</a>
                 </div>
             </div>
         </div>

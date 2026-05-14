@@ -27,6 +27,7 @@ namespace VetClinicMVC.Controllers
             var appointments = await _context.Appointments
                 .Include(a => a.Pet)
                 .Include(a => a.Client)
+                .Include(a => a.Staff)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ToListAsync();
 
@@ -98,6 +99,41 @@ namespace VetClinicMVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(staff);
+        }
+
+        // GET: Staff/CheckIn/5
+        public async Task<IActionResult> CheckIn(int id)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.Pet)
+                .Include(a => a.Client)
+                .FirstOrDefaultAsync(a => a.AppointmentId == id);
+
+            if (appointment == null) return NotFound();
+
+            return View(appointment);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessCheckIn(int appointmentId, string diagnosis, string treatment, string weight)
+        {
+            var appointment = await _context.Appointments.FindAsync(appointmentId);
+            if (appointment != null)
+            {
+                // 1. Update Appointment Status
+                appointment.Status = "Completed";
+
+                // 2. Here you would normally save to a MedicalRecords table. 
+                // For now, we'll append it to the Notes to save time!
+                appointment.Notes += $"\n\n--- MEDICAL RECORD ---\nWeight: {weight}\nDiagnosis: {diagnosis}\nTreatment: {treatment}";
+
+                _context.Update(appointment);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Medical record saved and appointment completed!";
+            }
+
+            return RedirectToAction(nameof(ManageAppointments));
         }
     }
 }

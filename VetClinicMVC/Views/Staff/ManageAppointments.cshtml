@@ -1,49 +1,115 @@
 ﻿@model IEnumerable<VetClinicMVC.Models.Appointment>
+@using Microsoft.AspNetCore.Html
+@using System.Text.Encodings.Web
+
+@{
+    ViewData["Title"] = "My Appointments";
+}
 
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">📋 Clinic Appointment Queue</h4>
-        </div>
-        <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Client</th>
-                        <th>Pet</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📅 My Appointment History</h2>
+        <a asp-controller="Appointment" asp-action="Book" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Book New Appointment
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <td>@item.AppointmentDate.ToString("g")</td>
-                            <td>@item.Client?.LastName</td>
-                            <td><span class="badge bg-info text-dark">@item.Pet?.Name</span></td>
-                            <td>@item.Reason</td>
-                            <td>
-                                <span class="badge @(item.Status == "Confirmed" ? "bg-success" : item.Status == "Pending" ? "bg-warning text-dark" : "bg-danger")">
-                                    @item.Status
-                                </span>
-                            </td>
-                            <td>
-                                @if (item.Status == "Pending")
-                                {
-                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@item.AppointmentId" />
-                                        <button name="status" value="Confirmed" class="btn btn-sm btn-success">Approve</button>
-                                        <button name="status" value="Cancelled" class="btn btn-sm btn-outline-danger">Reject</button>
-                                    </form>
-                                }
-                            </td>
+                            <th>Pet Name</th>
+                            <th>Veterinarian</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th class="text-center">Medical Results</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-primary">@item.Pet?.Name</span>
+                                </td>
+                                <td>Dr. @item.Staff?.FirstName @item.Staff?.LastName</td>
+                                <td>@item.AppointmentDate.ToString("MMM dd, yyyy - hh:mm tt")</td>
+                                <td>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending Review</span>
+                                    }
+                                    else if (item.Status == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">Confirmed</span>
+                                    }
+                                    else if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-primary">Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">@item.Status</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.Status == "Completed")
+                                    {
+                                        <button type="button" class="btn btn-sm btn-info text-white"
+                                                onclick="showResults('@item.Pet?.Name', '@JavaScriptEncoder.Default.Encode(item.Notes ?? "No notes recorded.")')">
+                                            <i class="bi bi-file-earmark-medical"></i> View Summary
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small italic">Available after visit</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar-x display-4 d-block mb-2"></i>
+                                    No appointments found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="resultsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">Medical Summary</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="bg-light p-3 rounded border">
+                    <pre id="modalBody" style="white-space: pre-wrap; font-family: inherit; font-size: 1rem; color: #333;"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showResults(petName, notes) {
+            document.getElementById('modalTitle').innerText = "Medical Summary for " + petName;
+            document.getElementById('modalBody').innerText = notes;
+            new bootstrap.Modal(document.getElementById('resultsModal')).show();
+        }
+    </script>
+}

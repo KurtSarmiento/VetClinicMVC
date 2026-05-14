@@ -16,7 +16,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="/">🐾 VetCare Clinic</a>
+            <a class="navbar-brand fw-bold">🐾 VetCare Clinic</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -26,19 +26,31 @@
                     {
                         @if (User.IsInRole("Client"))
                         {
-                            <li class="nav-item"><a class="nav-link" href="/ClientPortal"><i class="fas fa-home"></i> My Portal</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Appointment/Book"><i class="fas fa-calendar-plus"></i> Book Visit</a></li>
-							<li class="nav-item"><a class="nav-link" href="/ClientPortal/MyAppointments"><i class="fas fa-calendar-alt"></i> My Appointments</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="ClientPortal" asp-action="Index">
+                                    <i class="fas fa-home"></i> My Portal
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="ClientPortal" asp-action="Book">
+                                    <i class="fas fa-calendar-plus"></i> Book Visit
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="ClientPortal" asp-action="MyAppointments">
+                                    <i class="fas fa-calendar-alt"></i> My Appointments
+                                </a>
+                            </li>
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" href="/Dashboard"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link fw-bold text-warning" href="/Staff/ManageAppointments"><i class="fas fa-stethoscope"></i> VET QUEUE</a></li>
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                                     <i class="fas fa-paw"></i> Management
                                 </a>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu shadow">
                                     <li><a class="dropdown-item" href="/Client">Clients</a></li>
                                     <li><a class="dropdown-item" href="/Pet">Pets</a></li>
                                     <li><hr class="dropdown-divider"></li>
@@ -46,8 +58,8 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-item"><a class="nav-link" href="/Appointment"><i class="fas fa-calendar-alt"></i> Appointments</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Visit"><i class="fas fa-notes-medical"></i> Visits</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Appointment"><i class="fas fa-calendar-alt"></i> All Appointments</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Visit"><i class="fas fa-notes-medical"></i> Medical Records</a></li>
                             <li class="nav-item"><a class="nav-link" href="/Inventory"><i class="fas fa-pills"></i> Inventory</a></li>
                             <li class="nav-item"><a class="nav-link" href="/Billing"><i class="fas fa-file-invoice-dollar"></i> Billing</a></li>
                         }

@@ -1,66 +1,67 @@
 ﻿@{
-    ViewData["Title"] = "VetCare Clinic - Angeles City";
+    ViewData["Title"] = "VetClinic Portal";
 }
 
-<!-- Hero Section -->
-<section class="bg-primary text-white py-5 text-center">
-    <div class="container">
-        <h1 class="display-4 fw-bold">🐾 Welcome to VetCare Clinic</h1>
-        <p class="lead">Compassionate veterinary care for your beloved pets in Angeles City</p>
-        <a href="/Identity/Account/Login" class="btn btn-light btn-lg mt-3">Book an Appointment</a>
-        <a href="/Home/Services" class="btn btn-outline-light btn-lg mt-3 ms-3">Our Services</a>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold text-primary">🐾 PawCare Veterinary Clinic</h1>
+        <p class="lead text-muted">A full-service medical center for your best friends.</p>
     </div>
-</section>
 
-<!-- About Us -->
-<section class="py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h2>About VetCare Clinic</h2>
-                <p>We are a full-service veterinary clinic dedicated to providing high-quality medical care for dogs, cats, and other pets. Our experienced veterinarians and friendly staff ensure your pet receives the best treatment possible.</p>
-                <ul>
-                    <li>24/7 Emergency Care</li>
-                    <li>Vaccinations & Preventive Care</li>
-                    <li>Surgery & Dental Services</li>
-                    <li>Laboratory & Diagnostic Imaging</li>
-                </ul>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card h-100 shadow border-0 text-center p-4">
+                <div class="card-body">
+                    <div class="display-1 mb-3 text-success">
+                        <i class="bi bi-person-heart"></i>
+                    </div>
+                    <h2 class="fw-bold">Pet Owner Portal</h2>
+                    <p class="text-muted mb-4">Book appointments, manage your pets, and view medical history.</p>
+                    <div class="d-grid">
+                        <a asp-controller="ClientPortal" asp-action="Index" class="btn btn-success btn-lg">Enter Client Portal</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 text-center">
-                <img src="https://via.placeholder.com/600x400?text=Vet+Clinic" class="img-fluid rounded" alt="Clinic" />
+        </div>
+
+        <div class="col-md-5">
+            <div class="card h-100 shadow border-0 text-center p-4">
+                <div class="card-body">
+                    <div class="display-1 mb-3 text-primary">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h2 class="fw-bold">Staff Console</h2>
+                    <p class="text-muted mb-4">Manage the daily queue, confirm bookings, and record medical visits.</p>
+                    <div class="d-grid">
+                        <a asp-controller="Staff" asp-action="ManageAppointments" class="btn btn-primary btn-lg">Access Staff Dashboard</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Services Preview -->
-<section class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">Our Services</h2>
-        <div class="row text-center">
+    <div class="mt-5 text-center p-4 bg-light rounded shadow-sm">
+        <h5 class="fw-bold">Demo Quick-Start Guide ⏱️</h5>
+        <div class="row text-start mt-3">
             <div class="col-md-4">
-                <h5>General Check-up</h5>
-                <p>Comprehensive health examinations</p>
+                <strong>1. Book:</strong> Enter Client Portal -> Book Appointment (Pick 10am-5pm).
             </div>
             <div class="col-md-4">
-                <h5>Vaccinations</h5>
-                <p>Protect your pet from diseases</p>
+                <strong>2. Confirm:</strong> Enter Staff Console -> Approve the request.
             </div>
             <div class="col-md-4">
-                <h5>Surgery</h5>
-                <p>Spay, Neuter & Emergency Surgery</p>
+                <strong>3. Visit:</strong> Staff Console -> Check-in -> Enter Weight/Diagnosis -> Complete.
             </div>
         </div>
-        <div class="text-center mt-4">
-            <a href="/Home/Services" class="btn btn-primary">View All Services</a>
-        </div>
     </div>
-</section>
+</div>
 
-<!-- Call to Action -->
-<section class="py-5 text-center bg-success text-white">
-    <div class="container">
-        <h3>Ready to book an appointment?</h3>
-        <a href="/Identity/Account/Login" class="btn btn-light btn-lg">Login / Register Now</a>
-    </div>
-</section>
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+</style>

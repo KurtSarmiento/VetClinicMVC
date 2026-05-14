@@ -1,0 +1,44 @@
+﻿@model VetClinicMVC.Models.Appointment
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">🩺 Medical Check-in: @Model.Pet?.Name</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ProcessCheckIn" method="post">
+                        <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Weight (kg)</label>
+                                <input type="text" name="weight" class="form-control" placeholder="e.g. 12.5" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Pet Owner</label>
+                                <input type="text" class="form-control" value="@Model.Client?.FirstName @Model.Client?.LastName" disabled />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Diagnosis / Findings</label>
+                            <textarea name="diagnosis" class="form-control" rows="3" placeholder="What did you find?" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Treatment / Prescription</label>
+                            <textarea name="treatment" class="form-control" rows="3" placeholder="What is the plan?" required></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="ManageAppointments" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success px-5">Complete Visit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
