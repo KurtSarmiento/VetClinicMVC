@@ -14,6 +14,7 @@ namespace VetClinicMVC.Controllers
         private readonly IPetService _petService;
         private readonly IAppointmentService _appointmentService;
         private readonly IVisitService _visitService;
+        private readonly IInvoiceService _invoiceService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -21,6 +22,7 @@ namespace VetClinicMVC.Controllers
             IPetService petService,
             IAppointmentService appointmentService,
             IVisitService visitService,
+            IInvoiceService invoiceService,
             IUnitOfWork unitOfWork,
             UserManager<IdentityUser> userManager)
         {
@@ -28,6 +30,7 @@ namespace VetClinicMVC.Controllers
             _petService = petService;
             _appointmentService = appointmentService;
             _visitService = visitService;
+            _invoiceService = invoiceService;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
@@ -52,6 +55,7 @@ namespace VetClinicMVC.Controllers
 
             ViewBag.MyPets = pets;
             ViewBag.MyAppointments = appointments;
+            ViewBag.MyInvoices = await _invoiceService.GetInvoicesByClientIdAsync(client.ClientId);
 
             // 🔥 This is the fix: Sending 'client', NOT 'pets'
             return View(client);
@@ -128,6 +132,15 @@ namespace VetClinicMVC.Controllers
 
             // 3. Sort by date (newest first)
             return View(appointments.OrderByDescending(a => a.AppointmentDate).ToList());
+        }
+
+        public async Task<IActionResult> MyBills()
+        {
+            var client = await _userLinkService.GetCurrentClientAsync();
+            if (client == null) return RedirectToAction("CompleteProfile", "ClientPortal");
+
+            var invoices = await _invoiceService.GetInvoicesByClientIdAsync(client.ClientId);
+            return View(invoices);
         }
     }
 }

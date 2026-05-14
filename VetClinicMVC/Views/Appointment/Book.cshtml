@@ -1,10 +1,11 @@
 ﻿@model VetClinicMVC.Models.Appointment
 @{
     ViewData["Title"] = "Book Appointment";
+    var services = ViewBag.Services as IEnumerable<VetClinicMVC.Models.Service> ?? Enumerable.Empty<VetClinicMVC.Models.Service>();
 }
 
 <div class="container mt-4">
-    <div class="card shadow">
+    <div class="card shadow-sm app-card">
         <div class="card-header bg-primary text-white">
             <h4 class="mb-0">📅 Schedule an Appointment</h4>
         </div>
@@ -73,8 +74,16 @@
 
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        <label class="form-label fw-bold">Reason for Visit</label>
-                        <input asp-for="Reason" class="form-control" placeholder="e.g., Vaccination, Checkup" required />
+                        <label class="form-label fw-bold">Service Needed</label>
+                        <select id="serviceId" name="serviceId" class="form-select" required>
+                            <option value="" data-price="0">-- Choose a service --</option>
+                            @foreach (var service in services)
+                            {
+                                <option value="@service.ServiceId" data-price="@service.BasePrice">
+                                    @service.Name - ₱@service.BasePrice.ToString("N2")
+                                </option>
+                            }
+                        </select>
                         <span asp-validation-for="Reason" class="text-danger"></span>
                     </div>
                 </div>
@@ -84,12 +93,17 @@
                     <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any specific concerns?"></textarea>
                 </div>
 
+                <div class="alert alert-light border d-flex justify-content-between align-items-center">
+                    <span>Estimated booking bill</span>
+                    <strong id="estimatedBill">₱0.00</strong>
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center mt-4">
-                    <a href="/ClientPortal" class="btn btn-secondary">Back to Portal</a>
+                    <a asp-controller="ClientPortal" asp-action="Index" class="btn btn-secondary">Back to Portal</a>
                     <div class="text-muted small">
                         Selected: <span id="debugDate" class="fw-bold">None</span>
                     </div>
-                    <button type="submit" class="btn btn-success px-5">Submit Request</button>
+                    <button type="submit" class="btn btn-primary px-5">Submit Request</button>
                 </div>
             </form>
         </div>
@@ -103,6 +117,8 @@
             const timeInput = document.getElementById('timeInput');
             const finalInput = document.getElementById('finalDateTime');
             const debugText = document.getElementById('debugDate');
+            const serviceInput = document.getElementById('serviceId');
+            const estimatedBill = document.getElementById('estimatedBill');
 
             function updateFinalDateTime() {
                 if (dateInput.value && timeInput.value) {
@@ -130,6 +146,13 @@
             });
 
             timeInput.addEventListener('change', updateFinalDateTime);
+            serviceInput.addEventListener('change', function () {
+                const price = Number(this.options[this.selectedIndex].dataset.price || 0);
+                estimatedBill.innerText = '₱' + price.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            });
 
             // Initial run
             updateFinalDateTime();

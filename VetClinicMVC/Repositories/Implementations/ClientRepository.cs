@@ -12,12 +12,16 @@ namespace VetClinicMVC.Repositories.Implementations
         {
             return await _context.Clients
                 .Include(c => c.Pets)
+                    .ThenInclude(p => p.Species)
+                .Include(c => c.Pets)
+                    .ThenInclude(p => p.Breed)
                 .FirstOrDefaultAsync(c => c.ClientId == clientId);
         }
 
         public async Task<IEnumerable<Client>> GetActiveClientsAsync()
         {
             return await _context.Clients
+                .Include(c => c.Pets)
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.LastName)
                 .ToListAsync();

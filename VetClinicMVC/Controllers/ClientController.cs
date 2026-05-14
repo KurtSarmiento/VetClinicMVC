@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VetClinicMVC.Models;
 using VetClinicMVC.Services.Interfaces;
 
@@ -10,11 +11,13 @@ namespace VetClinicMVC.Controllers
     {
         private readonly IClientService _clientService;
         private readonly IPetService _petService;
+        private readonly VetClinicContext _context;
 
-        public ClientController(IClientService clientService, IPetService petService)
+        public ClientController(IClientService clientService, IPetService petService, VetClinicContext context)
         {
             _clientService = clientService;
             _petService = petService;
+            _context = context;
         }
 
         public async Task<IActionResult> Index(string search = "")
@@ -57,6 +60,13 @@ namespace VetClinicMVC.Controllers
         {
             var client = await _clientService.GetClientWithPetsAsync(id);
             if (client == null) return NotFound();
+
+            ViewBag.PetVisits = await _context.Visits
+                .Include(v => v.Pet)
+                .Include(v => v.Staff)
+                .Where(v => v.Pet.ClientId == id)
+                .OrderByDescending(v => v.VisitDate)
+                .ToListAsync();
 
             return View(client);
         }

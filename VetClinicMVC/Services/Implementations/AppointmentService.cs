@@ -17,7 +17,7 @@ namespace VetClinicMVC.Services.Implementations
 
         public async Task<Appointment?> GetByIdAsync(int id)
         {
-            return await _appointmentRepository.GetByIdAsync(id);
+            return await _appointmentRepository.GetAppointmentWithDetailsAsync(id);
         }
 
         public async Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(int count = 10)
@@ -33,7 +33,7 @@ namespace VetClinicMVC.Services.Implementations
         public async Task CreateAppointmentAsync(Appointment appointment, string currentUserId)
         {
             // Business Logic: Set initial status
-            appointment.Status = "Scheduled";
+            appointment.Status = string.IsNullOrWhiteSpace(appointment.Status) ? "Pending" : appointment.Status;
             appointment.CreatedAt = DateTime.UtcNow;
 
             await _appointmentRepository.AddAsync(appointment);
@@ -55,7 +55,7 @@ namespace VetClinicMVC.Services.Implementations
             var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
             if (appointment != null)
             {
-                string oldStatus = appointment.Status;
+                var oldStatus = appointment.Status ?? "Unknown";
                 appointment.Status = status;
                 _appointmentRepository.Update(appointment);
                 await _appointmentRepository.SaveChangesAsync();

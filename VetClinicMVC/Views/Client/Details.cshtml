@@ -1,22 +1,105 @@
-﻿@model VetClinicMVC.Models.Client
+@model VetClinicMVC.Models.Client
 @{
     ViewData["Title"] = "Client Details";
+    var petVisits = ViewBag.PetVisits as IEnumerable<VetClinicMVC.Models.Visit> ?? Enumerable.Empty<VetClinicMVC.Models.Visit>();
 }
 
-<h2>Client Details</h2>
-
-<div class="card">
-    <div class="card-body">
-        <h4>@Model.FirstName @Model.LastName</h4>
-        <p><strong>Email:</strong> @Model.Email</p>
-        <p><strong>Phone:</strong> @Model.Phone</p>
-        <p><strong>Address:</strong> @Model.Address, @Model.City</p>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h2 class="mb-1">@Model.FirstName @Model.LastName</h2>
+        <p class="text-muted mb-0">@Model.Email</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Pet" asp-action="Create" asp-route-clientId="@Model.ClientId" class="btn btn-primary">Add Pet</a>
+        <a asp-action="Edit" asp-route-id="@Model.ClientId" class="btn btn-outline-secondary">Edit Client</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
     </div>
 </div>
 
-<h4 class="mt-4">Pets</h4>
-<a href="/Pet/Create?clientId=@Model.ClientId" class="btn btn-success mb-3">+ Add Pet</a>
+<div class="card shadow-sm app-card">
+    <div class="card-body">
+        <h5 class="mb-3">Pet Medical History</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Pet</th>
+                        <th>Veterinarian</th>
+                        <th>Diagnosis</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var visit in petVisits)
+                    {
+                        <tr>
+                            <td>@visit.VisitDate?.ToString("MMM dd, yyyy")</td>
+                            <td>@visit.Pet?.Name</td>
+                            <td>Dr. @visit.Staff?.FirstName @visit.Staff?.LastName</td>
+                            <td>@visit.Diagnosis</td>
+                            <td class="text-end">
+                                <a asp-controller="Visit" asp-action="Details" asp-route-id="@visit.VisitId" class="btn btn-sm btn-outline-primary">Open</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!petVisits.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No medical history recorded for this client's pets.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<!-- Pets list will be enhanced later -->
-
-<a href="/Client" class="btn btn-secondary">Back to List</a>
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm app-card h-100">
+            <div class="card-body">
+                <h5 class="mb-3">Contact</h5>
+                <dl class="mb-0">
+                    <dt>Phone</dt>
+                    <dd>@(string.IsNullOrWhiteSpace(Model.Phone) ? "Not provided" : Model.Phone)</dd>
+                    <dt>Address</dt>
+                    <dd>@Model.Address @Model.City</dd>
+                    <dt>Status</dt>
+                    <dd>@(Model.IsActive ? "Active" : "Inactive")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm app-card h-100">
+            <div class="card-body">
+                <h5 class="mb-3">Pets</h5>
+                <div class="row g-3">
+                    @foreach (var pet in Model.Pets)
+                    {
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@pet.Name</h6>
+                                        <div class="text-muted small">@pet.Species?.Name @pet.Breed?.Name</div>
+                                    </div>
+                                    <a asp-controller="Pet" asp-action="Details" asp-route-id="@pet.PetId" class="btn btn-sm btn-outline-primary">Open</a>
+                                </div>
+                                <div class="mt-3 d-flex gap-2">
+                                    <a asp-controller="Visit" asp-action="Index" class="btn btn-sm btn-outline-secondary">Medical Records</a>
+                                    <a asp-controller="Pet" asp-action="Edit" asp-route-id="@pet.PetId" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (!Model.Pets.Any())
+                    {
+                        <p class="text-muted mb-0">No pets registered yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

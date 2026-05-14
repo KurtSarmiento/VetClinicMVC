@@ -3,7 +3,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">📋 All Appointment Requests</h2>
 
-    <div class="card shadow">
+    <div class="card shadow-sm app-card">
         <div class="card-body">
             <table class="table table-hover">
                 <thead class="table-dark">
@@ -27,11 +27,11 @@
                             <td>
                                 @if (item.Status == "Pending")
                                 {
-                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    <span class="badge bg-primary">Pending</span>
                                 }
                                 else if (item.Status == "Confirmed")
                                 {
-                                    <span class="badge bg-success">Confirmed</span>
+                                    <span class="badge bg-primary">Confirmed</span>
                                 }
                                 else
                                 {
@@ -42,10 +42,12 @@
                                 @if (item.Status == "Pending")
                                 {
                                     <div class="btn-group">
-                                        <form asp-action="Confirm" asp-route-id="@item.AppointmentId" method="post" style="display:inline;">
-                                            <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                        <form asp-action="Confirm" asp-route-id="@item.AppointmentId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-primary">Confirm</button>
                                         </form>
-                                        <form asp-action="Cancel" asp-route-id="@item.AppointmentId" method="post" style="display:inline; margin-left: 5px;">
+                                        <form asp-action="Cancel" asp-route-id="@item.AppointmentId" method="post" class="d-inline ms-1">
+                                            @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
                                         </form>
                                     </div>

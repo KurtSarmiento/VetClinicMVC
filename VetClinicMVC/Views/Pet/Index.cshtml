@@ -1,37 +1,44 @@
-﻿@model IEnumerable<VetClinicMVC.Models.Pet>
+@model IEnumerable<VetClinicMVC.Models.Pet>
+@{
+    ViewData["Title"] = "Pets";
+}
 
-<table class="table table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Pet Name</th>
-            <th>Owner</th>
-            <th>Species</th>
-            <th>Breed</th>
-            <th>Gender</th>
-            <th>Age</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@(item.Client != null ? $"{item.Client.FirstName} {item.Client.LastName}" : "N/A")</td>
-                <td>@item.Species?.Name</td>
-                <td>@item.Breed?.Name</td>
-                <td>@item.Gender</td>
-                <td>
-                    @{
-                        var age = DateTime.Today.Year - (item.BirthDate?.Year ?? DateTime.Today.Year);
-                        @age @(age == 1 ? "year" : "years")
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.PetId" class="btn btn-info btn-sm">View</a>
-                    <a asp-action="Edit" asp-route-id="@item.PetId" class="btn btn-warning btn-sm">Edit</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h2 class="mb-1">Pets</h2>
+        <p class="text-muted mb-0">All registered dogs, cats, and other patients.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Add Pet</a>
+</div>
+
+<div class="row g-3">
+    @foreach (var item in Model)
+    {
+        var age = item.BirthDate.HasValue ? DateTime.Today.Year - item.BirthDate.Value.Year : (int?)null;
+        <div class="col-md-6 col-xl-4">
+            <div class="card shadow-sm app-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between gap-3">
+                        <div>
+                            <h5 class="mb-1">@item.Name</h5>
+                            <div class="text-muted">@item.Species?.Name @(string.IsNullOrWhiteSpace(item.Breed?.Name) ? "" : $"• {item.Breed.Name}")</div>
+                        </div>
+                        <span class="pet-avatar"><i class="bi bi-heart-fill"></i></span>
+                    </div>
+                    <dl class="row small mt-3 mb-0">
+                        <dt class="col-4">Owner</dt>
+                        <dd class="col-8">@item.Client?.FirstName @item.Client?.LastName</dd>
+                        <dt class="col-4">Gender</dt>
+                        <dd class="col-8">@item.Gender</dd>
+                        <dt class="col-4">Age</dt>
+                        <dd class="col-8">@(age.HasValue ? $"{age} year(s)" : "Unknown")</dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-white border-0 d-flex gap-2">
+                    <a asp-action="Details" asp-route-id="@item.PetId" class="btn btn-sm btn-outline-primary flex-fill">View</a>
+                    <a asp-action="Edit" asp-route-id="@item.PetId" class="btn btn-sm btn-outline-secondary flex-fill">Edit</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

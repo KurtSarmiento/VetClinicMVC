@@ -51,7 +51,7 @@
 </div>
 
 <div class="mt-4">
-    <a href="/Pet/Edit/@Model.PetId" class="btn btn-warning">Edit Pet</a>
-    <a href="/Client/Details/@Model.ClientId" class="btn btn-info">View Owner</a>
-    <a href="/Pet" class="btn btn-secondary">Back to Pets</a>
+    <a asp-action="Edit" asp-route-id="@Model.PetId" class="btn btn-primary">Edit Pet</a>
+    <a asp-controller="Client" asp-action="Details" asp-route-id="@Model.ClientId" class="btn btn-outline-primary">View Owner</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Pets</a>
 </div>

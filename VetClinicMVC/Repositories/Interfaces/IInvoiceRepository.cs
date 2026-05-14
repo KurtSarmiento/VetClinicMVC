@@ -7,5 +7,6 @@ namespace VetClinicMVC.Repositories.Interfaces
         Task<IEnumerable<Invoice>> GetInvoicesByClientIdAsync(int clientId);
         Task<IEnumerable<Invoice>> GetUnpaidInvoicesAsync();
         Task<Invoice?> GetInvoiceWithDetailsAsync(int id);
+        Task<IEnumerable<Invoice>> GetAllWithDetailsAsync();
     }
 }

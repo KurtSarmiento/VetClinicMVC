@@ -10,16 +10,26 @@ namespace VetClinicMVC.Controllers
     {
         private readonly IInvoiceService _invoiceService;
         private readonly IPaymentService _paymentService;
+        private readonly IUserLinkService _userLinkService;
 
-        public BillingController(IInvoiceService invoiceService, IPaymentService paymentService)
+        public BillingController(
+            IInvoiceService invoiceService,
+            IPaymentService paymentService,
+            IUserLinkService userLinkService)
         {
             _invoiceService = invoiceService;
             _paymentService = paymentService;
+            _userLinkService = userLinkService;
         }
 
         // List all invoices
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Client"))
+            {
+                return RedirectToAction("MyBills", "ClientPortal");
+            }
+
             var invoices = await _invoiceService.GetAllAsync();
             return View(invoices);
         }
@@ -27,14 +37,25 @@ namespace VetClinicMVC.Controllers
         // Show Invoice Details & Payment Form
         public async Task<IActionResult> Details(int id)
         {
-            var invoice = await _invoiceService.GetInvoicesByClientIdAsync(id);
+            var invoice = await _invoiceService.GetByIdAsync(id);
             if (invoice == null) return NotFound();
+
+            if (User.IsInRole("Client"))
+            {
+                var client = await _userLinkService.GetCurrentClientAsync();
+                if (client == null || invoice.ClientId != client.ClientId)
+                {
+                    return Forbid();
+                }
+            }
+
             return View(invoice);
         }
 
         // Handle the Payment Submission
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ProcessPayment(int invoiceId, decimal amount, string method)
         {
             var currentUserId = User.Identity?.Name ?? "System";

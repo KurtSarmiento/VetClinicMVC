@@ -48,7 +48,7 @@ namespace VetClinicMVC.Models
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getutcdate())");
                 entity.Property(e => e.DurationMinutes).HasDefaultValue(30);
                 entity.Property(e => e.Reason).HasMaxLength(500);
-                entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Scheduled");
+                entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Pending");
                 entity.HasOne(d => d.Client).WithMany(p => p.Appointments)
                     .HasForeignKey(d => d.ClientId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(d => d.Pet).WithMany(p => p.Appointments)
@@ -82,21 +82,27 @@ namespace VetClinicMVC.Models
             {
                 entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB5655C76F6");
                 entity.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E98133DF6D98").IsUnique();
+                entity.Property(e => e.Subtotal).HasPrecision(18, 2);
+                entity.Property(e => e.TaxAmount).HasPrecision(18, 2);
+                entity.Property(e => e.TotalAmount).HasPrecision(18, 2);
             });
 
             modelBuilder.Entity<Medication>(entity =>
             {
                 entity.HasKey(e => e.MedicationId);
+                entity.Property(e => e.UnitPrice).HasPrecision(18, 2);
             });
 
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.HasKey(e => e.PaymentId);
+                entity.Property(e => e.Amount).HasPrecision(18, 2);
             });
 
             modelBuilder.Entity<Pet>(entity =>
             {
                 entity.HasKey(e => e.PetId).HasName("PK__Pets__48E53862C763279D");
+                entity.Property(e => e.Weight).HasPrecision(8, 2);
                 entity.HasOne(d => d.Client).WithMany(p => p.Pets)
                     .HasForeignKey(d => d.ClientId);
                 entity.HasOne(d => d.Species).WithMany(p => p.Pets)
@@ -106,6 +112,7 @@ namespace VetClinicMVC.Models
             modelBuilder.Entity<Service>(entity =>
             {
                 entity.HasKey(e => e.ServiceId).HasName("PK__Services__C51BB00A770D7615");
+                entity.Property(e => e.BasePrice).HasPrecision(18, 2);
                 entity.HasOne(d => d.Category).WithMany(p => p.Services)
                     .HasForeignKey(d => d.CategoryId).OnDelete(DeleteBehavior.ClientSetNull);
             });
@@ -139,6 +146,8 @@ namespace VetClinicMVC.Models
             modelBuilder.Entity<Visit>(entity =>
             {
                 entity.HasKey(e => e.VisitId).HasName("PK__Visits__4D3AA1DEA49F82AA");
+                entity.Property(e => e.Temperature).HasPrecision(5, 2);
+                entity.Property(e => e.Weight).HasPrecision(8, 2);
                 entity.HasOne(d => d.Pet).WithMany(p => p.Visits)
                     .HasForeignKey(d => d.PetId).OnDelete(DeleteBehavior.ClientSetNull);
                 entity.HasOne(d => d.Staff).WithMany(p => p.Visits)

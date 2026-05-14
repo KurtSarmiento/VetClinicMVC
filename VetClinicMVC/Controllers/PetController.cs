@@ -1,8 +1,8 @@
 ﻿// Controllers/PetController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using VetClinicMVC.Models;
 using VetClinicMVC.Repositories.Interfaces;
 using VetClinicMVC.Services.Interfaces;
@@ -56,7 +56,7 @@ namespace VetClinicMVC.Controllers
             return View(allPets);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? clientId = null)
         {
             var currentClient = await _userLinkService.GetCurrentClientAsync();
 
@@ -71,7 +71,7 @@ namespace VetClinicMVC.Controllers
             }
 
             ViewBag.Species = await _petService.GetAllSpeciesAsync();
-            return View(new PetCreateViewModel());
+            return View(new PetCreateViewModel { ClientId = clientId ?? currentClient?.ClientId ?? 0 });
         }
 
         [HttpGet]
@@ -140,13 +140,50 @@ namespace VetClinicMVC.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var pets = await _unitOfWork.Pets.FindAsync(p => p.PetId == id);
-            var pet = pets.FirstOrDefault();
+            var pet = await _context.Pets.AsNoTracking().FirstOrDefaultAsync(p => p.PetId == id);
             if (pet == null) return NotFound();
 
-            // Re-use your ViewBags from the Create method to populate dropdowns
-            ViewBag.Species = await _petService.GetAllSpeciesAsync();
+            await PopulatePetEditListsAsync(pet);
             return View(pet);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Pet pet)
+        {
+            ModelState.Remove(nameof(Pet.Client));
+            ModelState.Remove(nameof(Pet.Species));
+
+            if (ModelState.IsValid)
+            {
+                var existing = await _context.Pets.AsNoTracking().FirstOrDefaultAsync(p => p.PetId == pet.PetId);
+                if (existing == null) return NotFound();
+
+                pet.CreatedAt = existing.CreatedAt;
+                pet.UpdatedAt = DateTime.UtcNow;
+
+                _context.Pets.Update(pet);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Pet updated successfully.";
+                return RedirectToAction(nameof(Details), new { id = pet.PetId });
+            }
+
+            await PopulatePetEditListsAsync(pet);
+            return View(pet);
+        }
+
+        private async Task PopulatePetEditListsAsync(Pet pet)
+        {
+            var clients = await _clientService.GetAllActiveAsync();
+            ViewBag.Clients = clients.Select(c => new SelectListItem
+            {
+                Value = c.ClientId.ToString(),
+                Text = $"{c.FirstName} {c.LastName}",
+                Selected = c.ClientId == pet.ClientId
+            });
+            ViewBag.Species = new SelectList(await _petService.GetAllSpeciesAsync(), "SpeciesId", "Name", pet.SpeciesId);
+            ViewBag.Breeds = new SelectList(await _petService.GetBreedsBySpeciesAsync(pet.SpeciesId), "BreedId", "Name", pet.BreedId);
         }
     }
 

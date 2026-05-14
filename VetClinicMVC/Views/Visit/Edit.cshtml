@@ -1,0 +1,58 @@
+@model VetClinicMVC.Models.Visit
+@{
+    ViewData["Title"] = "Edit Medical Record";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Edit Medical Record</h2>
+    <a asp-action="Details" asp-route-id="@Model.VisitId" class="btn btn-outline-secondary">Back</a>
+</div>
+
+<div class="card shadow-sm app-card">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="VisitId" />
+            <input type="hidden" asp-for="AppointmentId" />
+            <input type="hidden" asp-for="PetId" />
+            <input type="hidden" asp-for="StaffId" />
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="VisitDate" class="form-label fw-semibold"></label>
+                    <input asp-for="VisitDate" class="form-control" type="datetime-local" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Weight" class="form-label fw-semibold">Weight (kg)</label>
+                    <input asp-for="Weight" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Temperature" class="form-label fw-semibold">Temperature (C)</label>
+                    <input asp-for="Temperature" class="form-control" type="number" step="0.1" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ChiefComplaint" class="form-label fw-semibold"></label>
+                <input asp-for="ChiefComplaint" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Diagnosis" class="form-label fw-semibold"></label>
+                <textarea asp-for="Diagnosis" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Treatment" class="form-label fw-semibold"></label>
+                <textarea asp-for="Treatment" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label fw-semibold"></label>
+                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Details" asp-route-id="@Model.VisitId" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Record</button>
+            </div>
+        </form>
+    </div>
+</div>

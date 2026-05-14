@@ -1,43 +1,85 @@
-﻿@model VetClinicMVC.Models.Appointment
+@model VetClinicMVC.Models.Appointment
+@{
+    ViewData["Title"] = "Patient Check-in";
+}
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">🩺 Medical Check-in: @Model.Pet?.Name</h4>
-                </div>
-                <div class="card-body">
-                    <form asp-action="ProcessCheckIn" method="post">
-                        <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Patient Check-in</h2>
+        <p class="text-muted mb-0">@Model.AppointmentDate.ToString("MMM dd, yyyy h:mm tt")</p>
+    </div>
+    <a asp-action="ManageAppointments" class="btn btn-outline-secondary">Back to Queue</a>
+</div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Weight (kg)</label>
-                                <input type="text" name="weight" class="form-control" placeholder="e.g. 12.5" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Pet Owner</label>
-                                <input type="text" class="form-control" value="@Model.Client?.FirstName @Model.Client?.LastName" disabled />
-                            </div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm app-card">
+            <div class="card-header bg-primary text-white">
+                <strong>Appointment Summary</strong>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt>Patient</dt>
+                    <dd>@Model.Pet?.Name</dd>
+                    <dt>Owner</dt>
+                    <dd>@Model.Client?.FirstName @Model.Client?.LastName</dd>
+                    <dt>Veterinarian</dt>
+                    <dd>Dr. @Model.Staff?.FirstName @Model.Staff?.LastName</dd>
+                    <dt>Reason</dt>
+                    <dd>@Model.Reason</dd>
+                    <dt>Status</dt>
+                    <dd><span class="badge bg-primary">@Model.Status</span></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm app-card">
+            <div class="card-header bg-primary text-white">
+                <strong>Medical Record</strong>
+            </div>
+            <div class="card-body">
+                <form asp-action="ProcessCheckIn" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Weight (kg)</label>
+                            <input type="number" name="weight" class="form-control" step="0.01" value="@Model.Pet?.Weight" />
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Diagnosis / Findings</label>
-                            <textarea name="diagnosis" class="form-control" rows="3" placeholder="What did you find?" required></textarea>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Temperature (C)</label>
+                            <input type="number" name="temperature" class="form-control" step="0.1" placeholder="e.g. 38.5" />
                         </div>
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Treatment / Prescription</label>
-                            <textarea name="treatment" class="form-control" rows="3" placeholder="What is the plan?" required></textarea>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chief Complaint</label>
+                        <input type="text" name="chiefComplaint" class="form-control" value="@Model.Reason" />
+                    </div>
 
-                        <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="ManageAppointments" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-success px-5">Complete Visit</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Diagnosis / Findings</label>
+                        <textarea name="diagnosis" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Treatment / Prescription</label>
+                        <textarea name="treatment" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Clinical Notes</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="ManageAppointments" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Complete Visit</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

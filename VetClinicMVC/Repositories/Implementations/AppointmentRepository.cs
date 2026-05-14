@@ -24,6 +24,7 @@ namespace VetClinicMVC.Repositories.Implementations
             return await _context.Appointments
                 .Include(a => a.Pet)
                 .Include(a => a.Client)
+                .Include(a => a.Staff)
                 .Where(a => a.AppointmentDate >= DateTime.UtcNow && a.Status != "Cancelled")
                 .OrderBy(a => a.AppointmentDate)
                 .Take(count)
@@ -53,6 +54,15 @@ namespace VetClinicMVC.Repositories.Implementations
                 .Where(a => a.ClientId == clientId)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ToListAsync();
+        }
+
+        public async Task<Appointment?> GetAppointmentWithDetailsAsync(int appointmentId)
+        {
+            return await _context.Appointments
+                .Include(a => a.Pet)
+                .Include(a => a.Client)
+                .Include(a => a.Staff)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
         }
     }
 }

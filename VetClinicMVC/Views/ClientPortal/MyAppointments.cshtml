@@ -24,6 +24,7 @@
                         <th>Date & Time</th>
                         <th>Reason</th>
                         <th>Status</th>
+                        <th>Billing</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,11 +38,11 @@
                             <td>
                                 @if (item.Status == "Pending")
                                 {
-                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    <span class="badge bg-primary">Pending</span>
                                 }
                                 else if (item.Status == "Confirmed")
                                 {
-                                    <span class="badge bg-success">Confirmed</span>
+                                    <span class="badge bg-primary">Confirmed</span>
                                 }
                                 else if (item.Status == "Cancelled")
                                 {
@@ -52,12 +53,13 @@
                                     <span class="badge bg-secondary">@item.Status</span>
                                 }
                             </td>
+                            <td>Check <a asp-action="MyBills">My Bills</a></td>
                         </tr>
                     }
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 You have no appointments scheduled.
                             </td>
                         </tr>

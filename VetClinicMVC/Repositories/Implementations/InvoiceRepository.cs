@@ -26,6 +26,16 @@ namespace VetClinicMVC.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Invoice>> GetAllWithDetailsAsync()
+        {
+            return await _context.Invoices
+                .Include(i => i.Client)
+                .Include(i => i.Visit)
+                    .ThenInclude(v => v!.Pet)
+                .OrderByDescending(i => i.IssueDate)
+                .ToListAsync();
+        }
+
         public async Task<Invoice?> GetInvoiceWithDetailsAsync(int id)
         {
             return await _context.Invoices

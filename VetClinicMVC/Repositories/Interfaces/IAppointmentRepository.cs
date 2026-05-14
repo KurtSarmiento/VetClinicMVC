@@ -8,5 +8,6 @@ namespace VetClinicMVC.Repositories.Interfaces
         Task<IEnumerable<Appointment>> GetUpcomingAppointmentsAsync(int count = 10);
         Task<IEnumerable<Appointment>> GetAppointmentsForStaffAsync(int staffId, DateTime? date = null);
         Task<IEnumerable<Appointment>> GetAppointmentsByClientIdAsync(int clientId);
+        Task<Appointment?> GetAppointmentWithDetailsAsync(int appointmentId);
     }
 }

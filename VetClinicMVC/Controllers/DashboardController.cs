@@ -5,7 +5,7 @@ using VetClinicMVC.ViewModels;
 
 namespace VetClinicMVC.Controllers
 {
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(Roles = "Admin,Veterinarian,Receptionist")]
     public class DashboardController : Controller
     {
         private readonly IAppointmentService _appointmentService;

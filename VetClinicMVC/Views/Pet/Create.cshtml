@@ -16,7 +16,7 @@
                 <option value="">-- Select Owner --</option>
                 @foreach (var c in ViewBag.Clients as IEnumerable<VetClinicMVC.Models.Client> ?? Enumerable.Empty<VetClinicMVC.Models.Client>())
                 {
-                    <option value="@c.ClientId">@c.FirstName @c.LastName</option>
+                    <option value="@c.ClientId" selected="@(Model.ClientId == c.ClientId)">@c.FirstName @c.LastName</option>
                 }
             </select>
         </div>

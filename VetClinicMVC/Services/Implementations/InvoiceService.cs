@@ -17,17 +17,17 @@ namespace VetClinicMVC.Services.Implementations
 
         public async Task<Invoice?> GetByIdAsync(int id)
         {
-            return await _invoiceRepository.GetByIdAsync(id);
+            return await _invoiceRepository.GetInvoiceWithDetailsAsync(id);
         }
 
         public async Task<IEnumerable<Invoice>> GetAllAsync()
         {
-            return await _invoiceRepository.GetAllAsync();
+            return await _invoiceRepository.GetAllWithDetailsAsync();
         }
 
         public async Task<IEnumerable<Invoice>> GetInvoicesByClientIdAsync(int clientId)
         {
-            return await _invoiceRepository.FindAsync(i => i.ClientId == clientId);
+            return await _invoiceRepository.GetInvoicesByClientIdAsync(clientId);
         }
 
         public async Task CreateInvoiceAsync(Invoice invoice, string currentUserId)

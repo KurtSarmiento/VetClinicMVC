@@ -1,0 +1,45 @@
+@model VetClinicMVC.Models.Visit
+@{
+    ViewData["Title"] = "Medical Record Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Medical Record Details</h2>
+        <p class="text-muted mb-0">@Model.VisitDate?.ToString("MMM dd, yyyy h:mm tt")</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.VisitId" class="btn btn-primary">Edit</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    </div>
+</div>
+
+<div class="card shadow-sm app-card">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Pet</dt>
+            <dd class="col-sm-9">@Model.Pet?.Name</dd>
+
+            <dt class="col-sm-3">Veterinarian</dt>
+            <dd class="col-sm-9">Dr. @Model.Staff?.FirstName @Model.Staff?.LastName</dd>
+
+            <dt class="col-sm-3">Weight</dt>
+            <dd class="col-sm-9">@(Model.Weight?.ToString("0.##") ?? "Not recorded") kg</dd>
+
+            <dt class="col-sm-3">Temperature</dt>
+            <dd class="col-sm-9">@(Model.Temperature?.ToString("0.#") ?? "Not recorded") C</dd>
+
+            <dt class="col-sm-3">Chief Complaint</dt>
+            <dd class="col-sm-9">@Model.ChiefComplaint</dd>
+
+            <dt class="col-sm-3">Diagnosis</dt>
+            <dd class="col-sm-9">@Model.Diagnosis</dd>
+
+            <dt class="col-sm-3">Treatment</dt>
+            <dd class="col-sm-9">@Model.Treatment</dd>
+
+            <dt class="col-sm-3">Notes</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Notes) ? "No notes added." : Model.Notes)</dd>
+        </dl>
+    </div>
+</div>

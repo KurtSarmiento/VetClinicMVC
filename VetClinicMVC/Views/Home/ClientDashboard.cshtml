@@ -1,10 +1,13 @@
 ﻿@model VetClinicMVC.ViewModels.DashboardViewModel
+@inject VetClinicMVC.Services.Interfaces.IUserLinkService UserLinkService
 @{
     ViewData["Title"] = "My Dashboard";
+    var client = await UserLinkService.GetCurrentClientAsync();
+    var firstName = client?.FirstName ?? User.Identity?.Name;
 }
 
 <div class="jumbotron bg-light py-4 mb-4">
-    <h2>Welcome to Your Pet Portal, @User.Identity?.Name!</h2>
+    <h2>Welcome to Your Pet Portal, @firstName!</h2>
     <p class="lead">Manage your pets and book appointments easily.</p>
 </div>
 
@@ -23,7 +26,7 @@
             <div class="card-body text-center">
                 <h5>Upcoming Appointments</h5>
                 <h3>@Model.UpcomingAppointments.Count()</h3>
-                <a href="/ClientPortal/BookAppointment" class="btn btn-success mt-3">Book New Appointment</a>
+                <a asp-controller="Appointment" asp-action="Book" class="btn btn-primary mt-3">Book New Appointment</a>
             </div>
         </div>
     </div>
@@ -32,7 +35,7 @@
             <div class="card-body text-center">
                 <h5>Medical Records</h5>
                 <h3>0</h3>
-                <a href="/ClientPortal/MyVisits" class="btn btn-warning mt-3">View Records</a>
+                <a href="/ClientPortal/MyVisits" class="btn btn-primary mt-3">View Records</a>
             </div>
         </div>
     </div>

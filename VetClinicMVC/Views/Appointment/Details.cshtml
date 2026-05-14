@@ -1,0 +1,62 @@
+@model VetClinicMVC.Models.Appointment
+@{
+    ViewData["Title"] = "Appointment Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Appointment Details</h2>
+        <p class="text-muted mb-0">@Model.AppointmentDate.ToString("MMM dd, yyyy h:mm tt")</p>
+    </div>
+    <a asp-controller="Staff" asp-action="ManageAppointments" class="btn btn-outline-secondary">Back to Queue</a>
+</div>
+
+@if (!User.IsInRole("Client"))
+{
+    <div class="card shadow-sm app-card mt-3">
+        <div class="card-body d-flex flex-wrap gap-2 justify-content-end">
+            @if (Model.Status == "Pending" || Model.Status == "Scheduled")
+            {
+                <form asp-action="Confirm" asp-route-id="@Model.AppointmentId" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-primary">Accept Request</button>
+                </form>
+            }
+            @if (Model.Status == "Confirmed")
+            {
+                <a asp-controller="Staff" asp-action="CheckIn" asp-route-id="@Model.AppointmentId" class="btn btn-primary">Complete Check-in</a>
+            }
+            @if (Model.Status == "Pending" || Model.Status == "Scheduled" || Model.Status == "Confirmed")
+            {
+                <form asp-action="Cancel" asp-route-id="@Model.AppointmentId" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-secondary">Cancel Appointment</button>
+                </form>
+            }
+        </div>
+    </div>
+}
+
+<div class="card shadow-sm app-card">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Pet</dt>
+            <dd class="col-sm-9">@Model.Pet?.Name</dd>
+
+            <dt class="col-sm-3">Owner</dt>
+            <dd class="col-sm-9">@Model.Client?.FirstName @Model.Client?.LastName</dd>
+
+            <dt class="col-sm-3">Veterinarian</dt>
+            <dd class="col-sm-9">Dr. @Model.Staff?.FirstName @Model.Staff?.LastName</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9"><span class="badge bg-primary">@Model.Status</span></dd>
+
+            <dt class="col-sm-3">Reason</dt>
+            <dd class="col-sm-9">@Model.Reason</dd>
+
+            <dt class="col-sm-3">Notes</dt>
+            <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Notes) ? "No notes added." : Model.Notes)</dd>
+        </dl>
+    </div>
+</div>

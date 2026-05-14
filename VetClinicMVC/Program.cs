@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VetClinicMVC.Data;
 using VetClinicMVC.Models;
@@ -50,6 +49,7 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserLinkService, UserLinkService>();
+builder.Services.AddScoped<IMedicationService, MedicationService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -115,6 +115,32 @@ using (var scope = app.Services.CreateScope())
             await staffRepo.AddAsync(adminStaff);
             await staffRepo.SaveChangesAsync();
         }
+    }
+
+    var db = scope.ServiceProvider.GetRequiredService<VetClinicContext>();
+    if (!db.ServiceCategories.Any(c => c.Name == "Wellness"))
+    {
+        db.ServiceCategories.Add(new ServiceCategory { Name = "Wellness", Description = "Routine pet wellness services" });
+    }
+
+    if (!db.ServiceCategories.Any(c => c.Name == "Grooming"))
+    {
+        db.ServiceCategories.Add(new ServiceCategory { Name = "Grooming", Description = "Bathing and coat care services" });
+    }
+
+    await db.SaveChangesAsync();
+
+    if (!db.Services.Any())
+    {
+        var wellness = db.ServiceCategories.First(c => c.Name == "Wellness");
+        var grooming = db.ServiceCategories.First(c => c.Name == "Grooming");
+
+        db.Services.AddRange(
+            new Service { CategoryId = wellness.CategoryId, Name = "Checkup", Description = "General health consultation", BasePrice = 500m, DurationMinutes = 30, IsActive = true },
+            new Service { CategoryId = wellness.CategoryId, Name = "Vaccination", Description = "Routine vaccination appointment", BasePrice = 850m, DurationMinutes = 30, IsActive = true },
+            new Service { CategoryId = grooming.CategoryId, Name = "Grooming", Description = "Basic grooming session", BasePrice = 700m, DurationMinutes = 60, IsActive = true }
+        );
+        await db.SaveChangesAsync();
     }
 }
 
