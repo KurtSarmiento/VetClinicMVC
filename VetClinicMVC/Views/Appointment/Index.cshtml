@@ -1,55 +1,61 @@
 ﻿@model IEnumerable<VetClinicMVC.Models.Appointment>
-@{
-    ViewData["Title"] = "Appointment Management";
-}
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📅 Appointment Schedule</h2>
-        <a asp-action="Book" class="btn btn-primary">Book New</a>
-    </div>
+    <h2 class="mb-4">📋 All Appointment Requests</h2>
 
-    <div class="table-responsive shadow-sm card">
-        <table class="table table-hover mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>Date & Time</th>
-                    <th>Patient (Pet)</th>
-                    <th>Client</th>
-                    <th>Veterinarian</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-dark">
                     <tr>
-                        <td>@item.AppointmentDate.ToString("MMM dd, yyyy HH:mm")</td>
-                        <td><strong>@item.Pet?.Name</strong></td>
-                        <td>@item.Client?.FirstName @item.Client?.LastName</td>
-                        <td>Dr. @item.Staff?.LastName</td>
-                        <td>
-                            <span class="badge @(item.Status == "Confirmed" ? "bg-success" : item.Status == "Cancelled" ? "bg-danger" : "bg-warning")">
-                                @item.Status
-                            </span>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                @if (item.Status == "Scheduled")
-                                {
-                                    <form asp-action="Confirm" asp-route-id="@item.AppointmentId" method="post" class="d-inline">
-                                        <button type="submit" class="btn btn-outline-success">Confirm</button>
-                                    </form>
-                                }
-                                <form asp-action="Cancel" asp-route-id="@item.AppointmentId" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Cancel this appointment?')">Cancel</button>
-                                </form>
-                            </div>
-                        </td>
+                        <th>Date/Time</th>
+                        <th>Pet</th>
+                        <th>Owner</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.AppointmentDate.ToString("MMM dd, yyyy HH:mm")</td>
+                            <td><strong>@item.Pet?.Name</strong></td>
+                            <td>@item.Client?.FirstName @item.Client?.LastName</td>
+                            <td>@item.Reason</td>
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (item.Status == "Confirmed")
+                                {
+                                    <span class="badge bg-success">Confirmed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@item.Status</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.Status == "Pending")
+                                {
+                                    <div class="btn-group">
+                                        <form asp-action="Confirm" asp-route-id="@item.AppointmentId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-success">Confirm</button>
+                                        </form>
+                                        <form asp-action="Cancel" asp-route-id="@item.AppointmentId" method="post" style="display:inline; margin-left: 5px;">
+                                            <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                        </form>
+                                    </div>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-info ms-2">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

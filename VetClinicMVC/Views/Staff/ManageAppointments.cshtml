@@ -1,0 +1,49 @@
+﻿@model IEnumerable<VetClinicMVC.Models.Appointment>
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📋 Clinic Appointment Queue</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Client</th>
+                        <th>Pet</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.AppointmentDate.ToString("g")</td>
+                            <td>@item.Client?.LastName</td>
+                            <td><span class="badge bg-info text-dark">@item.Pet?.Name</span></td>
+                            <td>@item.Reason</td>
+                            <td>
+                                <span class="badge @(item.Status == "Confirmed" ? "bg-success" : item.Status == "Pending" ? "bg-warning text-dark" : "bg-danger")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.AppointmentId" />
+                                        <button name="status" value="Confirmed" class="btn btn-sm btn-success">Approve</button>
+                                        <button name="status" value="Cancelled" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

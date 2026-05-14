@@ -117,5 +117,17 @@ namespace VetClinicMVC.Controllers
             ViewBag.MyPets = await _petService.GetPetsByClientIdAsync(currentClient.ClientId);
             return View();
         }
+        public async Task<IActionResult> MyAppointments()
+        {
+            // 1. Get the current logged-in client
+            var client = await _userLinkService.GetCurrentClientAsync();
+            if (client == null) return RedirectToAction("Login", "Account");
+
+            // 2. Fetch their appointments (make sure your service includes Pet and Staff data)
+            var appointments = await _appointmentService.GetAppointmentsByClientIdAsync(client.ClientId);
+
+            // 3. Sort by date (newest first)
+            return View(appointments.OrderByDescending(a => a.AppointmentDate).ToList());
+        }
     }
 }

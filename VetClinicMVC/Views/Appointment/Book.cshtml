@@ -9,12 +9,12 @@
             <h4 class="mb-0">📅 Schedule an Appointment</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Book" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form asp-action="Book" method="post" id="bookingForm">
+                <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Select Pet</label>
+                        <label class="form-label fw-bold">Select Pet</label>
                         <select asp-for="PetId" class="form-select" required>
                             <option value="">-- Choose your pet --</option>
                             @if (ViewBag.MyPets != null)
@@ -29,40 +29,66 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Preferred Veterinarian</label>
+                        <label class="form-label fw-bold">Preferred Veterinarian</label>
                         <select asp-for="StaffId" class="form-select" required>
                             <option value="">-- Select a Vet --</option>
                             @foreach (var staff in ViewBag.Staff)
                             {
-                                <option value="@staff.StaffId">Dr. @staff.FirstName @staff.LastName</option>
+                                <option value="@staff.StaffId">
+                                    Dr. @staff.FirstName @staff.LastName (@staff.Specialization)
+                                </option>
                             }
                         </select>
-                        <span asp-validation-for="StaffId" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Appointment Date & Time</label>
-                        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required
-                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
-                        <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        <label class="form-label fw-bold">Appointment Date</label>
+                        <input type="date" id="dateInput" name="dateInput" class="form-control" required
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Reason for Visit</label>
+                        <label class="form-label fw-bold">Preferred Time</label>
+                        <select id="timeInput" name="timeInput" class="form-select" required>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="10:30">10:30 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="11:30">11:30 AM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="13:30">1:30 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="14:30">2:30 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="15:30">3:30 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="16:30">4:30 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type="hidden" asp-for="AppointmentDate" id="finalDateTime" />
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">Reason for Visit</label>
                         <input asp-for="Reason" class="form-control" placeholder="e.g., Vaccination, Checkup" required />
                         <span asp-validation-for="Reason" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Additional Notes</label>
+                    <label class="form-label fw-bold">Additional Notes</label>
                     <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any specific concerns?"></textarea>
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
+                <div class="d-flex justify-content-between align-items-center mt-4">
                     <a href="/ClientPortal" class="btn btn-secondary">Back to Portal</a>
+                    <div class="text-muted small">
+                        Selected: <span id="debugDate" class="fw-bold">None</span>
+                    </div>
                     <button type="submit" class="btn btn-success px-5">Submit Request</button>
                 </div>
             </form>
@@ -71,7 +97,42 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        $(document).ready(function () {
+            const dateInput = document.getElementById('dateInput');
+            const timeInput = document.getElementById('timeInput');
+            const finalInput = document.getElementById('finalDateTime');
+            const debugText = document.getElementById('debugDate');
+
+            function updateFinalDateTime() {
+                if (dateInput.value && timeInput.value) {
+                    // Stitches into yyyy-MM-ddTHH:mm
+                    const combined = dateInput.value + 'T' + timeInput.value;
+                    finalInput.value = combined;
+                    debugText.innerText = combined.replace('T', ' ');
+                }
+            }
+
+            dateInput.addEventListener('change', function () {
+                // dateInput.value is "yyyy-MM-dd"
+                // New Date("yyyy-MM-dd") in JS usually defaults to UTC
+                const date = new Date(this.value);
+                const day = date.getUTCDay();
+
+                if (day === 0) { // Sunday
+                    alert("The clinic is closed on Sundays.");
+                    this.value = '';
+                    finalInput.value = '';
+                    debugText.innerText = "None";
+                } else {
+                    updateFinalDateTime();
+                }
+            });
+
+            timeInput.addEventListener('change', updateFinalDateTime);
+
+            // Initial run
+            updateFinalDateTime();
+        });
+    </script>
 }
